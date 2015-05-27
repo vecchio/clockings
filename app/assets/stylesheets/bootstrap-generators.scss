@@ -1,0 +1,34 @@
+@import "bootstrap-variables.scss";
+@import "bootstrap-sprockets.scss";
+@import "bootstrap.scss";
+
+body {
+  padding-top: $navbar-height + 10px;
+}
+
+.page-header {
+  a.btn {
+    float: right;
+  }
+
+  a.btn + a.btn {
+    margin-right: 8px;
+  }
+}
+
+input[type="radio"], input[type="checkbox"] {
+  width: initial;
+  height: initial;
+  margin-top: 7px;
+}
+
+input[type="date"], input[type="time"], input[type="datetime-local"], input[type="month"] {
+  line-height: inherit;
+}
+
+.link-letter {
+//  padding: 2px 3px;
+//  border: 1px solid #ddd;
+  margin: 0px 2px;
+  color: #ddd;
+}

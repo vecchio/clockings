@@ -1,0 +1,52 @@
+/ - hide_questions = false if local_assigns[:hide_questions].nil?
+
+table.transparent
+  tr
+    - s_date = Date.today
+    - e_date = s_date
+    - if date_range == 'week'
+      - s_date = Date.today.beginning_of_week(:friday)
+      - e_date = Date.today.end_of_week(:friday)
+    - if date_range == 'month'
+      - s_date = Date.today.beginning_of_month
+      - e_date = Date.today.end_of_month
+    - if date_range == 'day only'
+      td.col-md-2: label Report Date:
+      td.col-md-2.date= date_select :filter, :start_date, :default => s_date
+    - else
+      td.col-md-2: label Start Date:
+      td.col-md-3.date= date_select :filter, :start_date, :default => s_date
+      td.col-md-2: label End Date:
+      td.col-md-3.date= date_select :filter, :end_date, :default => e_date
+    td.col-md-2.date
+      span.pull-right
+        = submit_tag 'Get Report'
+
+  / tr
+  /   - tos = TourOperator.for_supplier(@supplier.id).select('tour_operators.id, concat("wholesaler : ", tour_operators.name) as dp_name').order('tour_operators.name').uniq
+  /   - dst = Distributor.for_supplier(@supplier.id).select('(distributors.id + 100000000) as id, concat("distributor : ", distributors.company) as dp_name').order('distributors.company').uniq
+  /   td: label Wholesaler:
+  /   td= select_tag 'filter[tour_operator_id]',
+  /                  (prompt_option('- - - Include All Distributors and Wholesalers', 'IncludeAll') + \
+  /                   prompt_option('- - - Exclude All Distributors and Wholesalers', 'ExcludeAll') + \
+  /                   prompt_option('- - - Wholesalers Only (All)', 'WholesalersOnly') + \
+  /                   prompt_option('- - - Distributors Only (All)', 'DistributorsOnly') + \
+  /                   options_from_collection_for_select(dst, 'id', 'dp_name') + \
+  /                   options_from_collection_for_select(tos, 'id', 'dp_name')).html_safe, :style => 'width: 254px'
+  /
+  /   - if report_on
+  /     td: label Report on:
+  /     td
+  /       => select_tag :report_on, options_for_select(%w{ Activity Booking })
+  /       | date
+  /   - else
+  /     td[colspan='2']
+  /
+  / - unless hide_questions
+  /   tr
+  /     td: label Include Report Summaries:
+  /     td= check_box_tag :include_summaries
+  /     td: label Hide Report Details :
+  /     td= check_box_tag :hide_details
+  / tr
+    / td[colspan='4' style='text-align:right']= submit_tag 'Get Report'

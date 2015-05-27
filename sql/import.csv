@@ -1,0 +1,105 @@
+EmpNo,Name,Surname,Department,Department ID,Grouping,TreeID,Descr,DateTime,IN/Out Button,Unit Direction
+077,Cathleen,Hechtor,Empty,1,Empty,1,Turnstile,2013/09/05 15:28:10,OUT,N/A
+066,Zimkhita,Ronoti,Empty,1,Empty,1,Turnstile,2013/09/05 15:28:40,IN,N/A
+2019,Claudette,Barnard,Empty,1,Empty,1,Turnstile,2013/09/05 15:30:05,OUT,N/A
+049,Patience,Mene,Empty,1,Empty,1,Turnstile,2013/09/05 15:30:46,OUT,N/A
+074,Elmarie,Witbooi,Empty,1,Empty,1,Turnstile,2013/09/05 15:31:06,OUT,N/A
+063,Andiswa,Potso,Empty,1,Empty,1,Turnstile,2013/09/05 15:33:22,OUT,N/A
+049,Patience,Mene,Empty,1,Empty,1,Turnstile,2013/09/05 15:33:32,IN,N/A
+801,Nicole,Watts,Empty,1,Empty,1,Turnstile,2013/09/05 15:33:49,OUT,N/A
+074,Elmarie,Witbooi,Empty,1,Empty,1,Turnstile,2013/09/05 15:36:34,IN,N/A
+077,Cathleen,Hechtor,Empty,1,Empty,1,Turnstile,2013/09/05 15:36:40,IN,N/A
+2018,Rushaan,Ruiters,Empty,1,Empty,1,Turnstile,2013/09/05 15:37:05,OUT,N/A
+2019,Claudette,Barnard,Empty,1,Empty,1,Turnstile,2013/09/05 15:38:14,IN,N/A
+2021,Elaine,Williams,Empty,1,Empty,1,Turnstile,2013/09/05 15:42:51,IN,N/A
+2019,Claudette,Barnard,Empty,1,Empty,1,Turnstile,2013/09/05 15:45:18,OUT,N/A
+2021,Elaine,Williams,Empty,1,Empty,1,Turnstile,2013/09/05 15:45:45,OUT,N/A
+801,Nicole,Watts,Empty,1,Empty,1,Turnstile,2013/09/05 15:46:19,IN,N/A
+121,Shanette,Collins,Empty,1,Empty,1,Turnstile,2013/09/05 15:46:33,OUT,N/A
+2019,Claudette,Barnard,Empty,1,Empty,1,Turnstile,2013/09/05 15:49:00,IN,N/A
+1099,Annedene,Warnich,Empty,1,Empty,1,Turnstile,2013/09/05 15:50:32,IN,N/A
+121,Shanette,Collins,Empty,1,Empty,1,Turnstile,2013/09/05 15:52:22,IN,N/A
+002,Ralda,Adonis,Empty,1,Empty,1,Turnstile,2013/09/05 15:52:29,IN,N/A
+063,Andiswa,Potso,Empty,1,Empty,1,Turnstile,2013/09/05 15:52:52,IN,N/A
+006,Maryka,Baadjies,Empty,1,Empty,1,Turnstile,2013/09/05 15:57:14,OUT,N/A
+1099,Annedene,Warnich,Empty,1,Empty,1,Turnstile,2013/09/05 15:57:33,OUT,N/A
+801,Nicole,Watts,Empty,1,Empty,1,Turnstile,2013/09/05 15:59:43,OUT,N/A
+2000,Susaar,Opperman,Empty,1,Empty,1,Turnstile,2013/09/05 15:59:57,IN,N/A
+2001,Elza,La Grange,Empty,1,Empty,1,Turnstile,2013/09/05 16:03:11,IN,N/A
+1099,Annedene,Warnich,Empty,1,Empty,1,Turnstile,2013/09/05 16:03:17,IN,N/A
+006,Maryka,Baadjies,Empty,1,Empty,1,Turnstile,2013/09/05 16:03:55,IN,N/A
+131,Thalia,Davids,Empty,1,Empty,1,Turnstile,2013/09/05 16:06:15,OUT,N/A
+038,Lumka,Qhole,Empty,1,Empty,1,Turnstile,2013/09/05 16:07:25,OUT,N/A
+911,Lulama,Poni,Empty,1,Empty,1,Turnstile,2013/09/05 16:07:51,OUT,N/A
+131,Thalia,Davids,Empty,1,Empty,1,Turnstile,2013/09/05 16:10:02,IN,N/A
+911,Lulama,Poni,Empty,1,Empty,1,Turnstile,2013/09/05 16:10:11,IN,N/A
+1099,Annedene,Warnich,Empty,1,Empty,1,Turnstile,2013/09/05 16:11:18,OUT,N/A
+019,Ray-dene,Dreyer,Empty,1,Empty,1,Turnstile,2013/09/05 16:12:31,OUT,N/A
+038,Lumka,Qhole,Empty,1,Empty,1,Turnstile,2013/09/05 16:13:04,IN,N/A
+2001,Elza,La Grange,Empty,1,Empty,1,Turnstile,2013/09/05 16:13:39,OUT,N/A
+019,Ray-dene,Dreyer,Empty,1,Empty,1,Turnstile,2013/09/05 16:17:28,IN,N/A
+924,Thembisa,Mkizwane,Empty,1,Empty,1,Turnstile,2013/09/05 16:24:08,OUT,N/A
+803,Deidre,Daniels,Empty,1,Empty,1,Turnstile,2013/09/05 16:24:27,OUT,N/A
+042,Amanda Zanele,Maneli,Empty,1,Empty,1,Turnstile,2013/09/05 16:26:20,OUT,N/A
+042,Amanda Zanele,Maneli,Empty,1,Empty,1,Turnstile,2013/09/05 16:26:30,IN,N/A
+042,Amanda Zanele,Maneli,Empty,1,Empty,1,Turnstile,2013/09/05 16:26:37,OUT,N/A
+906,Abegail,Baxter,Empty,1,Empty,1,Turnstile,2013/09/05 16:28:19,OUT,N/A
+009,Sharon,Boer,Empty,1,Empty,1,Turnstile,2013/09/05 16:28:25,OUT,N/A
+905,Tesquenita,Marsh,Empty,1,Empty,1,Turnstile,2013/09/05 16:28:31,OUT,N/A
+065,Janine,Ronelli,Empty,1,Empty,1,Turnstile,2013/09/05 16:28:39,OUT,N/A
+006,Maryka,Baadjies,Empty,1,Empty,1,Turnstile,2013/09/05 16:28:45,OUT,N/A
+042,Amanda Zanele,Maneli,Empty,1,Empty,1,Turnstile,2013/09/05 16:28:53,IN,N/A
+042,Amanda Zanele,Maneli,Empty,1,Empty,1,Turnstile,2013/09/05 16:28:59,IN,N/A
+076,Nonkulunga,Zondi,Empty,1,Empty,1,Turnstile,2013/09/05 16:29:05,OUT,N/A
+124,Rochelle,Kordom,Empty,1,Empty,1,Turnstile,2013/09/05 16:29:11,OUT,N/A
+074,Elmarie,Witbooi,Empty,1,Empty,1,Turnstile,2013/09/05 16:29:21,OUT,N/A
+904,Ileen,Brown,Empty,1,Empty,1,Turnstile,2013/09/05 16:29:29,OUT,N/A
+918,Alchandry,Paul,Empty,1,Empty,1,Turnstile,2013/09/05 16:29:35,OUT,N/A
+922,Cynthia,Mboso,Empty,1,Empty,1,Turnstile,2013/09/05 16:29:40,OUT,N/A
+921,Adrewline,Hawker,Empty,1,Empty,1,Turnstile,2013/09/05 16:29:45,OUT,N/A
+026,Nomaroma,Gwane,Empty,1,Empty,1,Turnstile,2013/09/05 16:29:51,OUT,N/A
+109,Mjezu,Daphney Ntombikayise,Empty,1,Empty,1,Turnstile,2013/09/05 16:29:57,OUT,N/A
+222,Wendy,Tsholoba,Empty,1,Empty,1,Turnstile,2013/09/05 16:30:09,OUT,N/A
+920,Nomalibongwe,Mgidlana,Empty,1,Empty,1,Turnstile,2013/09/05 16:30:15,OUT,N/A
+036,Nombukhelo,Lebese,Empty,1,Empty,1,Turnstile,2013/09/05 16:30:24,OUT,N/A
+923,Olwethu,Mjezu,Empty,1,Empty,1,Turnstile,2013/09/05 16:30:30,OUT,N/A
+910,Zukiswa,Hlutyana,Empty,1,Empty,1,Turnstile,2013/09/05 16:30:38,OUT,N/A
+131,Thalia,Davids,Empty,1,Empty,1,Turnstile,2013/09/05 16:30:44,OUT,N/A
+919,Coceka,Booi,Empty,1,Empty,1,Turnstile,2013/09/05 16:31:31,OUT,N/A
+038,Lumka,Qhole,Empty,1,Empty,1,Turnstile,2013/09/05 16:31:37,OUT,N/A
+157,Noluthando,Baleni,Empty,1,Empty,1,Turnstile,2013/09/05 16:31:45,IN,N/A
+158,Lindiwe,Siwela,Empty,1,Empty,1,Turnstile,2013/09/05 16:31:51,IN,N/A
+107,Nosipho,Bles,Empty,1,Empty,1,Turnstile,2013/09/05 16:33:33,OUT,N/A
+015,Chandre,Davids,Empty,1,Empty,1,Turnstile,2013/09/05 16:34:05,OUT,N/A
+2000,Susaar,Opperman,Empty,1,Empty,1,Turnstile,2013/09/05 16:37:42,IN,N/A
+126,Zandile,Maneli,Empty,1,Empty,1,Turnstile,2013/09/05 16:42:32,OUT,N/A
+128,Thelma,Ntwanambi,Empty,1,Empty,1,Turnstile,2013/09/05 16:42:41,OUT,N/A
+053,Samathea,Minnaar,Empty,1,Empty,1,Turnstile,2013/09/05 16:42:46,OUT,N/A
+901,Khayakazi,Maliwa,Empty,1,Empty,1,Turnstile,2013/09/05 16:42:51,OUT,N/A
+080,Esmeralda,Pietersen,Empty,1,Empty,1,Turnstile,2013/09/05 16:42:57,OUT,N/A
+103,Jennifer,Gwe,Empty,1,Empty,1,Turnstile,2013/09/05 16:43:05,OUT,N/A
+040,Babalwa,Malanga,Empty,1,Empty,1,Turnstile,2013/09/05 16:43:11,OUT,N/A
+121,Shanette,Collins,Empty,1,Empty,1,Turnstile,2013/09/05 16:43:17,OUT,N/A
+062,Ursula,Pietersen,Empty,1,Empty,1,Turnstile,2013/09/05 16:43:26,OUT,N/A
+045,Miranda,Matataka,Empty,1,Empty,1,Turnstile,2013/09/05 16:44:09,OUT,N/A
+119,Aphreij,Arnoldus,Empty,1,Empty,1,Turnstile,2013/09/05 16:44:39,OUT,N/A
+066,Zimkhita,Ronoti,Empty,1,Empty,1,Turnstile,2013/09/05 16:45:03,OUT,N/A
+903,Vuyelwa,Danti,Empty,1,Empty,1,Turnstile,2013/09/05 16:45:10,OUT,N/A
+064,Nonkululeko,Potso,Empty,1,Empty,1,Turnstile,2013/09/05 16:45:18,OUT,N/A
+063,Andiswa,Potso,Empty,1,Empty,1,Turnstile,2013/09/05 16:45:23,OUT,N/A
+085,Lourene,Williams,Empty,1,Empty,1,Turnstile,2013/09/05 16:45:31,OUT,N/A
+085,Lourene,Williams,Empty,1,Empty,1,Turnstile,2013/09/05 16:45:40,IN,N/A
+077,Cathleen,Hechtor,Empty,1,Empty,1,Turnstile,2013/09/05 16:45:45,OUT,N/A
+101,Khangelwa,Pono,Empty,1,Empty,1,Turnstile,2013/09/05 16:51:24,OUT,N/A
+2019,Claudette,Barnard,Empty,1,Empty,1,Turnstile,2013/09/05 16:53:58,OUT,N/A
+097,Zingisa,Mfanta,Empty,1,Empty,1,Turnstile,2013/09/05 16:54:31,OUT,N/A
+019,Ray-dene,Dreyer,Empty,1,Empty,1,Turnstile,2013/09/05 16:55:55,OUT,N/A
+033,Rozanne,Josef,Empty,1,Empty,1,Turnstile,2013/09/05 16:56:07,OUT,N/A
+085,Lourene,Williams,Empty,1,Empty,1,Turnstile,2013/09/05 16:56:17,OUT,N/A
+909,Lee-Ann,Mentoor,Empty,1,Empty,1,Turnstile,2013/09/05 16:56:23,OUT,N/A
+925,Celiwe,Mbobosi,Empty,1,Empty,1,Turnstile,2013/09/05 16:56:30,OUT,N/A
+911,Lulama,Poni,Empty,1,Empty,1,Turnstile,2013/09/05 16:56:37,OUT,N/A
+042,Amanda Zanele,Maneli,Empty,1,Empty,1,Turnstile,2013/09/05 16:57:20,OUT,N/A
+049,Patience,Mene,Empty,1,Empty,1,Turnstile,2013/09/05 17:00:33,OUT,N/A
+002,Ralda,Adonis,Empty,1,Empty,1,Turnstile,2013/09/05 17:06:06,OUT,N/A
+002,Ralda,Adonis,Empty,1,Empty,1,Turnstile,2013/09/05 17:08:41,IN,N/A

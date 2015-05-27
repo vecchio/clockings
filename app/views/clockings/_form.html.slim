@@ -1,0 +1,31 @@
+= form_for(@clocking, :html => { :class => "form-horizontal", :role => "form" }) do |f|
+  - if @clocking.errors.any?
+    .alert.alert-danger.alert-dismissable role="alert"
+      button.close type="button" data-dismiss="alert"
+        span aria-hidden="true"
+          | &times;
+        span.sr-only
+          | Close
+      h4= "#{pluralize(@clocking.errors.count,"error")} prohibited this clocking from being saved:"
+      ul
+        - @clocking.errors.full_messages.each do |msg|
+          li= msg
+  .form-group
+    = f.label :finger, :class => "col-sm-2 control-label"
+    .col-sm-10
+      = f.number_field :finger, :class => "form-control"
+  .form-group
+    = f.label :direction, :class => "col-sm-2 control-label"
+    .col-sm-10
+      = f.text_field :direction, :class => "form-control"
+  .form-group
+    = f.label :clocking, :class => "col-sm-2 control-label"
+    .col-sm-10
+      = f.datetime_select :clocking, :class => "form-control"
+  .form-group
+    = f.label :workday, :class => "col-sm-2 control-label"
+    .col-sm-10
+      = f.date_select :workday, :class => "form-control"
+  .form-group
+    .col-sm-offset-2.col-sm-10
+      = f.submit :class => "btn btn-primary"

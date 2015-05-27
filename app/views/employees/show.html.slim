@@ -1,0 +1,26 @@
+.page-header
+  = link_to employees_path, :class => 'btn btn-default' do 
+    span.glyphicon.glyphicon-list-alt
+    |  Back 
+  = link_to edit_employee_path(@employee), :class => 'btn btn-primary' do 
+    span.glyphicon.glyphicon-pencil
+    |  Edit 
+  h1
+    | Show employee
+dl.dl-horizontal
+  dt
+    | Name:
+  dd
+    = @employee.name
+  dt
+    | Surname:
+  dd
+    = @employee.surname
+  dt
+    | Sort:
+  dd
+    = @employee.sort
+  dt
+    | Finger:
+  dd
+    = @employee.finger

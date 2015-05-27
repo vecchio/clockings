@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  finger: 1
+  direction: MyString
+  clocking: 2015-02-17 14:22:38
+  workday: 2015-02-17
+
+two:
+  finger: 1
+  direction: MyString
+  clocking: 2015-02-17 14:22:38
+  workday: 2015-02-17

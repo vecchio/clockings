@@ -1,0 +1,29 @@
+.page-header
+  = link_to new_employee_path, :class => 'btn btn-primary' do
+    span.glyphicon.glyphicon-plus New
+  h2 Listing employees
+
+.table-responsive
+  table.table.table-condensed.table-hover
+    thead
+      tr
+        th Name
+        th Surname
+        th Sort
+        th Finger
+        th.col-md-2
+    tbody
+      - @employees.each do | employee |
+        tr class=(is_active? ? 'active' : 'inactive')
+          td= employee.name
+          td= employee.surname
+          td= employee.sort
+          td= employee.finger
+          td
+            span.pull-right
+              => link_to employee, class: 'btn btn-default btn-xs' do
+                i.glyphicon.glyphicon-eye-open
+              => link_to edit_employee_path(employee), class: 'btn btn-default btn-xs' do
+                i.glyphicon.glyphicon-pencil
+              = link_to employee, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-default btn-xs' do
+                i.glyphicon.glyphicon-trash

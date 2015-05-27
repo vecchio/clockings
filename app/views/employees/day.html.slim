@@ -1,0 +1,86 @@
+.page-header
+  h2 Daily
+
+= form_tag day_employees_path, :method => :post do
+  .form-inline
+    .row.roses-row
+      .col-md-12.text-right
+        - letters = Employee.all.collect { |s| s.surname[0] }.uniq
+        - ('A'..'Z').each do |l|
+          span.link-letter
+            - if letters.include?(l)
+              = link_to l, url_for(params.merge(surname_start: l)), class: 'btn btn-default btn-xs'
+            - else
+              = l
+
+    .row
+      .col-md-5.form-group
+      .col-md-6
+        .form-group
+          => label_tag 'Report Date'
+          = date_select :filter, :s_date, default: @s_date
+
+        .form-group
+          div.checkbox
+            = check_box_tag  :show_all, class: 'form_control'
+            =< label_tag 'Show Old', nil,  for: :show_all
+        .form-group
+          = text_field_tag :q, '', class: 'form_control'
+
+      .col-md-1
+        span.pull-right
+          button.btn.btn-default.btn-xs [type='submit']
+            span.glyphicon.glyphicon-refresh
+hr
+
+.table-responsive
+  table.table.table-condensed.table-bordered.bg-success
+    thead
+      tr
+        th.text-center Permanent Employees
+        th.text-center Temporary Employees
+        th.text-center Latecomers
+    tbody
+      - @totals.each do | t |
+        tr
+          td.text-center= t.perms
+          td.text-center= t.temps
+          td.text-center= t.late
+
+.table-responsive
+  table.table-condensed.table.table-hover
+    thead
+      tr
+        th Finger
+        th Name
+        th Surname
+        th Workday
+        th Arrive
+        th.text-right Entries
+        th.text-right Dur
+        th.text-right Pay
+        th.col-md-1
+    tbody
+      - @payments.each do | p |
+        tr class=(p.employee.term == 'P' ? 'text-primary' : '')
+          td= p.employee.long_finger
+          td= p.employee.name
+          td= p.employee.surname
+          td= p.workday.strftime('%d %B %Y')
+          td class=(p.late == 1 ? 'danger' : '')
+            = p.arrive.strftime('%H:%M')
+          td.text-right= p.entries
+          td.text-right= p.duration.strftime('%H:%M')
+          td.text-right= number_with_precision  p.pay_duration, precision: 2
+          td
+            span.pull-right
+              => link_to clockings_path(finger: p.finger, workday: p.workday), class: 'btn btn-default btn-xs' do
+                i.glyphicon.glyphicon-eye-open
+
+javascript:
+  $('.datepicker').datepicker({
+    format: 'dd-MM-yyyy',
+    todayHighlight: true,
+    todayBtn: 'linked',
+    autoclose: true
+  });

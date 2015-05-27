@@ -1,0 +1,27 @@
+.page-header
+  = link_to new_holiday_path, :class => 'btn btn-default btn-sm' do
+    span.glyphicon.glyphicon-plus
+    |  New Holiday
+  h1
+    | Listing holidays
+
+.table-responsive
+  table.table-condensed.table.table-hover
+    thead
+      tr
+        th Holiday
+        th Holidate
+        th.col-md-2
+    tbody
+      - @holidays.each do | holiday |
+        tr
+          td= holiday.holiday
+          td= holiday.holidate
+          td
+            span.pull-right
+              => link_to holiday, class: 'btn btn-default btn-xs' do
+                i.glyphicon.glyphicon-eye-open
+              => link_to edit_holiday_path(holiday), class: 'btn btn-default btn-xs' do
+                i.glyphicon.glyphicon-pencil
+              = link_to holiday, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-default btn-xs' do
+                i.glyphicon.glyphicon-trash

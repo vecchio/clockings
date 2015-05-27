@@ -1,0 +1,18 @@
+.page-header
+  = link_to holidays_path, :class => 'btn btn-default' do 
+    span.glyphicon.glyphicon-list-alt
+    |  Back 
+  = link_to edit_holiday_path(@holiday), :class => 'btn btn-primary' do 
+    span.glyphicon.glyphicon-pencil
+    |  Edit 
+  h1
+    | Show holiday
+dl.dl-horizontal
+  dt
+    | Holiday:
+  dd
+    = @holiday.holiday
+  dt
+    | Holidate:
+  dd
+    = @holiday.holidate

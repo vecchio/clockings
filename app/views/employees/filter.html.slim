@@ -1,0 +1,67 @@
+.page-header
+  = link_to new_employee_path, :class => 'btn btn-default btn-sm' do
+    span.glyphicon.glyphicon-plus New
+  h2 Employees
+
+.row.show-grid
+  .col-md-8
+    - letters = Employee.all.collect { |s| s.surname[0] }.uniq
+    - ('A'..'Z').each do |l|
+      span.link-letter
+        - if letters.include?(l)
+          = link_to l, url_for(params.merge(surname_start: l)), class: 'btn btn-default btn-xs'
+        - else
+          = l
+  .col-md-4
+    /= bootstrap_form_tag url: filter_employees_path, :method => :post, :html => { :class => 'form-inline', :role => 'form' } do
+    = form_tag filter_employees_path, :method => :post do
+      .form-inline
+        .form-group
+          = text_field_tag :q, '', class: 'form_control'
+        .form-group
+          div.checkbox
+            = check_box_tag  :show_all, class: 'form_control'
+            =< label_tag 'Show Old', nil,  for: :show_all
+        span.pull-right
+          button.btn.btn-default.btn-xs [type='submit']
+            span.glyphicon.glyphicon-refresh
+hr
+
+.table-responsive
+  table.table-condensed.table.table-hover
+    thead
+      tr
+        th Sort
+        th Finger
+        th Name
+        th Surname
+        th Term
+        th Period
+        th.col-md-2
+    tbody
+      - @employees.each do | employee |
+        tr class=(employee.term == 'P' ? 'text-primary' : '')
+          td= employee.sort
+          td= employee.long_finger
+          td= employee.name
+          td= employee.surname
+          td= employee.term == 'P' ? 'Perm' : 'Temp'
+          td
+            => employee.employed_from.strftime('%d-%b-%Y')
+            | -
+            - if employee.employed_to <= Date.today
+              =<> employee.employed_to.strftime('%d-%b-%Y')
+            | (
+            - if employee.employed_to <= Date.today
+              = distance_of_time_in_words employee.employed_from, employee.employed_to
+            - else
+              = distance_of_time_in_words_to_now employee.employed_from
+            | )
+          td
+            span.pull-right
+              => link_to employee, class: 'btn btn-default btn-xs' do
+                i.glyphicon.glyphicon-eye-open
+              => link_to edit_employee_path(employee), class: 'btn btn-default btn-xs' do
+                i.glyphicon.glyphicon-pencil
+              = link_to employee, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-default btn-xs' do
+                i.glyphicon.glyphicon-trash
