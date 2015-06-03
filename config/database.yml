@@ -1,0 +1,29 @@
+default: &default
+  adapter: mysql2
+  encoding: utf8
+  reconnect: false
+  pool: 5
+  username: root
+  password: 1q2w3e4r
+#  host: 127.0.0.1
+  host: localhost
+#
+#default: &default
+#  adapter: postgresql
+#  encoding: unicode
+#  pool: 5
+#  username: g
+#  password: qqq
+#  template: template0
+
+development:
+  <<: *default
+  database: clock_dev
+
+test:
+  <<: *default
+  database: clock_test
+
+#production:
+#  <<: *default
+#  database: clock_prod
