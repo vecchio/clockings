@@ -1,37 +1,51 @@
 .page-header
-  h2 Daily
+  h2
+    | Daily Clockings
+    small< #{@s_date.strftime('%A, %d %B %Y')}
 
-= form_tag day_employees_path, :method => :post do
-  .form-inline
-    .row.roses-row
-      .col-md-12.text-right
-        - letters = Employee.all.collect { |s| s.surname[0] }.uniq
-        - ('A'..'Z').each do |l|
-          span.link-letter
-            - if letters.include?(l)
-              = link_to l, url_for(params.merge(surname_start: l)), class: 'btn btn-default btn-xs'
-            - else
-              = l
+- unless request.format == :pdf
+  = form_tag day_employees_path, method: :post do
+    .form-inline
+      .row.roses-row
+        .col-md-8
+          - letters = Employee.all.collect { |s| s.surname[0] }.uniq
+          - ('A'..'Z').each do |l|
+            span.link-letter
+              - if letters.include?(l)
+                = link_to l, url_for(params.merge(surname_start: l)), class: 'btn btn-default btn-xs'
+              - else
+                = l
+        .col-md-4
+          .form-group
+            div.checkbox
+              = check_box_tag :show_all, class: 'form_control'
+              =< label_tag 'Show Old', nil, for: :show_all
+          .form-group
+            = text_field_tag :q, '', class: 'form_control'
 
-    .row
-      .col-md-5.form-group
-      .col-md-6
-        .form-group
-          => label_tag 'Report Date'
-          = date_select :filter, :s_date, default: @s_date
+          /.col-md-2
+          span.pull-right
+            => link_to url_for(params.merge(:format => :pdf)), :class => 'btn btn-default btn-sm' do
+              span.glyphicon.glyphicon-print
 
-        .form-group
-          div.checkbox
-            = check_box_tag  :show_all, class: 'form_control'
-            =< label_tag 'Show Old', nil,  for: :show_all
-        .form-group
-          = text_field_tag :q, '', class: 'form_control'
+            button.btn.btn-default.btn-sm [type='submit']
+              span.glyphicon.glyphicon-refresh
 
-      .col-md-1
-        span.pull-right
-          button.btn.btn-default.btn-xs [type='submit']
-            span.glyphicon.glyphicon-refresh
-hr
+      .row
+        .col-md-2
+          .form-group.roses-date
+            .input-group.date
+              = text_field_tag :s_date, @s_date.strftime('%d %B %Y'), class: 'form-control'
+              span.input-group-addon
+                i.glyphicon.glyphicon-th
+
+        .col-md-4
+          .form-group
+            div.checkbox
+              = check_box_tag :late_comers, class: 'form_control'
+              =< label_tag 'Show only late comers', nil, for: :late_comers
+
+  hr
 
 .table-responsive
   table.table.table-condensed.table-bordered.bg-success
@@ -49,38 +63,36 @@ hr
 
 .table-responsive
   table.table-condensed.table.table-hover
-    thead
-      tr
-        th Finger
-        th Name
-        th Surname
-        th Workday
-        th Arrive
-        th.text-right Entries
-        th.text-right Dur
-        th.text-right Pay
+    /thead
+    tr
+      th Finger
+      th Name
+      th Surname
+      th Workday
+      th Arrive
+      th.text-right Entries
+      th.text-right Dur
+      th.text-right Pay
+      - unless request.format == :pdf
         th.col-md-1
-    tbody
-      - @payments.each do | p |
+    /tbody
+    - @payments.each do | p |
+      - show = true
+      - show = false if params[:late_comers] && p.late == 0
+      - if show
         tr class=(p.employee.term == 'P' ? 'text-primary' : '')
           td= p.employee.long_finger
-          td= p.employee.name
-          td= p.employee.surname
+          td= p.employee.name.capitalize
+          td= p.employee.surname.capitalize
           td= p.workday.strftime('%d %B %Y')
           td class=(p.late == 1 ? 'danger' : '')
             = p.arrive.strftime('%H:%M')
           td.text-right= p.entries
           td.text-right= p.duration.strftime('%H:%M')
           td.text-right= number_with_precision  p.pay_duration, precision: 2
-          td
-            span.pull-right
-              => link_to clockings_path(finger: p.finger, workday: p.workday), class: 'btn btn-default btn-xs' do
-                i.glyphicon.glyphicon-eye-open
+          - unless request.format == :pdf
+            td
+              span.pull-right
+                => link_to clockings_path(finger: p.finger, workday: p.workday), class: 'btn btn-default btn-xs' do
+                  i.glyphicon.glyphicon-eye-open
 
-javascript:
-  $('.datepicker').datepicker({
-    format: 'dd-MM-yyyy',
-    todayHighlight: true,
-    todayBtn: 'linked',
-    autoclose: true
-  });

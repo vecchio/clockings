@@ -1,4 +1,4 @@
-= form_for(@employee, :html => { :class => 'form-horisontal', :role => 'form' }) do |f|
+= form_for(@employee, :html => { class: 'form-horisontal', :role => 'form' }) do |f|
   - if @employee.errors.any?
     .alert.alert-danger.alert-dismissable role='alert'
       button.close type='button' data-dismiss='alert'
@@ -11,18 +11,40 @@
         - @employee.errors.full_messages.each do |msg|
           li= msg
   .col-sm-12
-    .form-group.col-sm-6= f.text_field :name, :class => 'form-control'
-    .form-group.col-sm-6= f.text_field :surname, :class => 'form-control'
+    .form-group.col-sm-6
+      = f.label :name
+      = f.text_field :name, class: 'form-control'
+    .form-group.col-sm-6
+      = f.label :surname
+      = f.text_field :surname, class: 'form-control'
   .col-sm-12
-    .form-group.col-sm-6= f.select :term, options_for_select({ 'Permanent' => 'P', 'Temporary' => 'T' }, f.object.term),  :class => 'form-control'
-    .form-group.col-sm-6= f.number_field :sort, :class => 'form-control'
+    .form-group.col-sm-6
+      = f.label :finger
+      = f.number_field :finger, class: 'form-control'
+    .form-group.col-sm-6
+      = f.label :sort
+      = f.number_field :sort, class: 'form-control'
   .col-sm-12
-    .form-group.col-sm-6= f.date_select :employed_from
-    .form-group.col-sm-6= f.date_select :employed_to
+    .form-group.col-sm-6
+      = f.label :term
+      br
+      = f.select :term, options_for_select({ Permanent: 'P', Temporary: 'T' }, f.object.term),  class: 'form-control'
+  .col-sm-12
+    .form-group.col-sm-6.roses-date
+      = f.label :employed_from
+      .input-group.date
+        = f.text_field :employed_from, class: 'form-control', value: f.object.employed_from.strftime('%d %B %Y')
+        span.input-group-addon
+          i.glyphicon.glyphicon-th
 
-  .col-sm-12
-    .form-group.col-sm-6= f.text_field :finger, :class => 'form-control'
-  .form-group.col-sm-12= f.submit :class => 'btn btn-primary'
+    .form-group.col-sm-6.roses-date
+      = f.label :employed_to
+      .input-group.date
+        = f.text_field :employed_to, class: 'form-control', value: f.object.employed_to.strftime('%d %B %Y')
+        span.input-group-addon
+          i.glyphicon.glyphicon-th
+
+  .form-group.col-sm-12= f.submit class: 'btn btn-primary'
 
 
 javascript:

@@ -15,6 +15,7 @@ class HolidaysController < ApplicationController
   # GET /holidays/new
   def new
     @holiday = Holiday.new
+    @holiday.holidate = Date.today
   end
 
   # GET /holidays/1/edit
@@ -28,7 +29,7 @@ class HolidaysController < ApplicationController
 
     respond_to do |format|
       if @holiday.save
-        format.html { redirect_to @holiday, notice: 'Holiday was successfully created.' }
+        format.html { redirect_to holidays_path, notice: 'Holiday was successfully created.' }
         format.json { render :show, status: :created, location: @holiday }
       else
         format.html { render :new }
@@ -42,7 +43,7 @@ class HolidaysController < ApplicationController
   def update
     respond_to do |format|
       if @holiday.update(holiday_params)
-        format.html { redirect_to @holiday, notice: 'Holiday was successfully updated.' }
+        format.html { redirect_to holidays_path, notice: 'Holiday was successfully updated.' }
         format.json { render :show, status: :ok, location: @holiday }
       else
         format.html { render :edit }
@@ -56,7 +57,7 @@ class HolidaysController < ApplicationController
   def destroy
     @holiday.destroy
     respond_to do |format|
-      format.html { redirect_to holidays_url, notice: 'Holiday was successfully destroyed.' }
+      format.html { redirect_to holidays_path, notice: 'Holiday was successfully destroyed.' }
       format.json { head :no_content }
     end
   end

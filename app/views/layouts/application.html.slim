@@ -8,8 +8,8 @@ html
     meta name="description" content=""
     meta name="author" content=""
     title Roses Clockings
-    = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true
-    = javascript_include_tag 'application', 'data-turbolinks-track' => true
+    = stylesheet_link_tag    'application', media: 'all'
+    = javascript_include_tag 'application'
     = csrf_meta_tags
   body
     nav.navbar.navbar-inverse.navbar-fixed-top role="navigation"
@@ -26,7 +26,8 @@ html
           ul.nav.navbar-nav
             li.active= link_to 'Home', filter_employees_path
             li= link_to 'Holidays', holidays_path
-            li= link_to 'Import', import_employees_path
+            /li= link_to 'Import', import_employees_path
+            li= link_to 'Import', get_import_clockings_path
             li= link_to 'Payroll', payroll_employees_path
             li= link_to 'Day', day_employees_path
             / li

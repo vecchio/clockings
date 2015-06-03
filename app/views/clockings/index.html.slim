@@ -1,51 +1,63 @@
+
 .page-header
-  = link_to :back, :class => 'btn btn-default btn-sm' do
-    span.glyphicon.glyphicon-chevron-left> Back
+  - unless request.format == :pdf
+    = link_to day_employees_path(s_date: @workday.strftime('%d %B %Y')), :class => 'btn btn-default btn-sm' do
+      span.glyphicon.glyphicon-chevron-left> Back
+    = link_to url_for(params.merge(:format => :pdf)), :class => 'btn btn-default btn-sm' do
+      span.glyphicon.glyphicon-print
   h3
-    = @employee.fullname
+    = @employee.fullname.titleize
     small< Clockings on #{@workday.strftime('%d %B %Y')}
 
 .table-responsive
   table.table-condensed.table.table-hover
     thead
       tr
-        th
-        th Outside
-        th In
-        th Out
-        th Inside
+        th.col-md-2
+        th.col-md-3 Outside
+        th.col-md-1 In
+        th.col-md-1 Out
+        th.col-md-6 Inside
     tbody
-      - i_time = Date.today
-      - o_time = Date.today
-      - start = true
-      - entries = 0
-      - last_direction = ''
-      - inside_duration = 0
-      - outside_duration = 0
-      - @clockings.each do | c |
-        - unless last_direction == c.direction
-          - last_direction = c.direction
-          - if c.direction == 'in'
-            - i_time = c.clocking
-            - entries += 1
-            | <tr>
-            td
-            td
-              - if start
-                - start = false
-              - else
-                - outside_duration += (i_time - o_time)
-                = distance_of_time_in_words i_time, o_time
-            td= c.clocking.strftime('%H:%M:%S')
-          - else
-            - o_time = c.clocking
-            - inside_duration += (o_time - i_time)
-            td= c.clocking.strftime('%H:%M:%S')
-            td= distance_of_time_in_words i_time, o_time
-            | </tr>
+      - out     = 0
+      - tot_out = 0
+      - tot_in  = 0
+      - @in_out.each_with_index do | c, i |
+        tr
+          td
+          td
+            - if i > 0
+              | #{Time.at(c[0] - out).utc.strftime('%H:%M:%S')} ~
+              =<> distance_of_time_in_words c[0], out
+              - tot_out += (c[0] - out)
+          td= c[0].strftime('%H:%M:%S')
+          td= c[1].strftime('%H:%M:%S')
+          td
+            | #{Time.at(c[1] - c[0]).utc.strftime('%H:%M:%S')} ~
+            =<> distance_of_time_in_words c[0], c[1]
+            - tot_in += (c[1] - c[0])
+
+          - out = c[1]
+
     tfoot
       th Total Time
-      th=  Time.at(outside_duration).utc.strftime('%H:%M:%S')
-      th= entries
+      th= Time.at(tot_out).utc.strftime('%H:%M:%S')
+      th= pluralize @in_out.count, 'entry'
       th
-      th= Time.at(inside_duration).utc.strftime('%H:%M:%S')
+      th= Time.at(tot_in).utc.strftime('%H:%M:%S')
+
+hr
+h4 Clocking Records
+
+.table-responsive
+  table.table-condensed.table.table-hover
+    tr
+      th.col-md-2
+      th.col-md-3 Direction
+      th.col-md-7 Time
+    - @clockings.each do |c|
+      tr
+        td
+        td= c.clocking.strftime('%H:%M:%S')
+        td= c.direction
+

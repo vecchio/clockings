@@ -20,7 +20,7 @@ select min(workday) as s_date, current_date as e_date from clockings;
 -- ---------------------------------------------------------------------------------
 create temporary table daterange as
 select max(workday) as s_date, current_date as e_date from payments;
-update daterange set e_date = date_add(s_date, interval 1000 day);
+update daterange set e_date = date_add(s_date, interval 50 day);
 
 delete from payments where workday >= (select s_date from daterange );
 
@@ -37,7 +37,6 @@ create temporary table clockinout as
   order by finger, iclock, oclock;
 
 delete from clockinout where oclock <  iclock;
-
 
 -- remove multiple clock outs
 create temporary table clockinoutclean_o as

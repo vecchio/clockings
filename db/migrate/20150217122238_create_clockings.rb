@@ -9,7 +9,7 @@ class CreateClockings < ActiveRecord::Migration
       t.timestamp :clocking
       t.date :workday
     end
-    add_index :clockings, :finger
+    add_index :clockings, [:finger, :clocking]
     add_index :clockings, :clocking
     add_index :clockings, :workday
   end

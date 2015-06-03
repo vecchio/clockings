@@ -12,9 +12,21 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require turbolinks
+// require turbolinks
+// require bootstrap-datepicker
+//= require bootstrap-datepicker/core.js
+//= require bootstrap-datepicker/locales/bootstrap-datepicker.en-GB.js
 //= require bootstrap-sprockets
 //= require bootstrap
-//  require bootstrap-datepicker/core
-//  require bootstrap-datepicker/locales/bootstrap-datepicker.en-GB.js
 //= require_tree .
+
+
+
+$(document).ready(function(){
+    $.fn.datepicker.defaults.format = 'dd MM yyyy';
+    $.fn.datepicker.defaults.todayBtn = 'linked';
+    $.fn.datepicker.defaults.autoclose = true;
+    $.fn.datepicker.defaults.todayHighlight = true;
+    $.fn.datepicker.defaults.orientation = 'auto top';
+    $('.roses-date .input-group.date').datepicker();
+});

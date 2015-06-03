@@ -3,8 +3,7 @@
   margin-bottom: 15px;
 }
 
-//.datepicker {
-//  -webkit-border-radius: 0px !important;
-//  -moz-border-radius: 0px !important;
-//  border-radius: 0px !important;
-//}
+.datepicker {
+  z-index: 10000 !important;
+}
+

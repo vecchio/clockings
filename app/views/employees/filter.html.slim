@@ -3,7 +3,7 @@
     span.glyphicon.glyphicon-plus New
   h2 Employees
 
-.row.show-grid
+.row
   .col-md-8
     - letters = Employee.all.collect { |s| s.surname[0] }.uniq
     - ('A'..'Z').each do |l|
@@ -13,7 +13,6 @@
         - else
           = l
   .col-md-4
-    /= bootstrap_form_tag url: filter_employees_path, :method => :post, :html => { :class => 'form-inline', :role => 'form' } do
     = form_tag filter_employees_path, :method => :post do
       .form-inline
         .form-group
@@ -23,8 +22,9 @@
             = check_box_tag  :show_all, class: 'form_control'
             =< label_tag 'Show Old', nil,  for: :show_all
         span.pull-right
-          button.btn.btn-default.btn-xs [type='submit']
+          button.btn.btn-default.btn-sm [type='submit']
             span.glyphicon.glyphicon-refresh
+
 hr
 
 .table-responsive
@@ -36,27 +36,26 @@ hr
         th Name
         th Surname
         th Term
-        th Period
+        th Employed
         th.col-md-2
     tbody
       - @employees.each do | employee |
-        tr class=(employee.term == 'P' ? 'text-primary' : '')
+        - rowclass = employee.term == 'P' ? 'text-primary' : ''
+        - rowclass = 'warning' if employee.employed_to <= Date.today
+        tr class="#{rowclass}"
           td= employee.sort
           td= employee.long_finger
-          td= employee.name
-          td= employee.surname
+          td= employee.name.capitalize
+          td= employee.surname.capitalize
           td= employee.term == 'P' ? 'Perm' : 'Temp'
-          td
-            => employee.employed_from.strftime('%d-%b-%Y')
-            | -
+          td= employee.employed_from.strftime('%d %b %Y')
+          td: span.small
             - if employee.employed_to <= Date.today
-              =<> employee.employed_to.strftime('%d-%b-%Y')
-            | (
+              =<> employee.employed_to.strftime('%d %b %Y')
             - if employee.employed_to <= Date.today
-              = distance_of_time_in_words employee.employed_from, employee.employed_to
+              =<> distance_of_time_in_words employee.employed_from, employee.employed_to
             - else
-              = distance_of_time_in_words_to_now employee.employed_from
-            | )
+              =<> distance_of_time_in_words_to_now employee.employed_from
           td
             span.pull-right
               => link_to employee, class: 'btn btn-default btn-xs' do

@@ -79,6 +79,16 @@ class EmployeesController < ApplicationController
     @payments = @payments.select(sql)
     @payments = @payments.limit(100)                                              unless params[:filter] || params[:surname_start]
     @payments = @payments.order(:workday, :finger).all
+
+    respond_to do |format|
+      format.html
+      format.pdf {
+        html = render_to_string(action: 'day.html.slim', layout: 'pdf.html.slim')
+        kit = PDFKit.new(html)
+        kit.stylesheets << "#{Rails.root.join('app/assets/stylesheets','pdf.css')}"
+        send_data kit.to_pdf, :filename => 'day-clockings.pdf', :type => :pdf
+      }
+    end
   end
 
   # GET /employees/1
@@ -89,6 +99,8 @@ class EmployeesController < ApplicationController
   # GET /employees/new
   def new
     @employee = Employee.new
+    @employee.employed_from = Date.today
+    @employee.employed_to = Date.today + 35.years
   end
 
   # GET /employees/1/edit
@@ -99,6 +111,7 @@ class EmployeesController < ApplicationController
   # POST /employees.json
   def create
     @employee = Employee.new(employee_params)
+
 
     respond_to do |format|
       if @employee.save
@@ -130,7 +143,7 @@ class EmployeesController < ApplicationController
   def destroy
     @employee.destroy
     respond_to do |format|
-      format.html { redirect_to employees_url, notice: 'Employee was successfully destroyed.' }
+      format.html { redirect_to filter_employees_path, notice: 'Employee was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
@@ -142,9 +155,9 @@ class EmployeesController < ApplicationController
 
 
     csv_string = CSV.generate do |csv|
-      csv << %w(no roses name surname fri sat sun mon tue wed thu pub)
+      csv << %w(no roses name surname wed thu fri mon tue sat sun pub)
       @payroll.each do |p|
-        csv << [p.sort,"P#{p.finger.to_s.rjust(4, '0')}",p.name,p.surname,p.fri,p.sat,p.sun,p.mon,p.tue,p.wed,p.thu,p.pub]
+        csv << [p.sort,"P#{p.finger.to_s.rjust(4, '0')}",p.name,p.surname,p.wed,p.thu,p.fri,p.mon,p.tue,p.sat,p.sun,p.pub]
       end
     end
     csv_string.gsub!(/\n/, "\r\n")
@@ -158,58 +171,65 @@ class EmployeesController < ApplicationController
     get_param_dates
     payroll_query(@s_date, @e_date)
 
-    if params[:export]
-      redirect_to action: :payroll_export, s_date: @s_date, e_date: @e_date
+    # if params[:export]
+    #   redirect_to action: :payroll_export, s_date: @s_date, e_date: @e_date
+    # end
+
+    respond_to do |format|
+      format.html
+      format.csv {
+        redirect_to action: :payroll_export, s_date: @s_date, e_date: @e_date
+      }
     end
 
   end
 
-  def payroll_query(s_date, e_date)
-    sql = <<-SQL
-                  employees.sort, employees.finger,
-                  employees.name, employees.surname,
-                  employees.term,
-                  sum(case
-                      when dayofweek(workday) = 1  and holidate is null
-                      then pay_duration                      else 0
-                      end) as sun,
-                  sum(case
-                      when dayofweek(workday) = 2 and holidate is null
-                      then pay_duration                      else 0
-                      end) as mon,
-                  sum(case
-                      when dayofweek(workday) = 3  and holidate is null
-                      then pay_duration                      else 0
-                      end) as tue    ,
-                  sum(case
-                      when dayofweek(workday) = 4  and holidate is null
-                      then pay_duration                      else 0
-                      end) as wed   ,
-                  sum(case
-                      when dayofweek(workday) = 5  and holidate is null
-                      then pay_duration                      else 0
-                      end) as thu,
-                  sum(case
-                      when dayofweek(workday) = 6  and holidate is null
-                      then pay_duration                      else 0
-                      end) as fri,
-                  sum(case
-                      when dayofweek(workday) = 7  and holidate is null
-                      then pay_duration                      else 0
-                      end) as sat,
-                  sum(case
-                      when holidate is not null
-                      then pay_duration                      else 0
-                      end) as pub
-    SQL
-
-    @payroll = Payment.between(s_date, e_date)
-    @payroll = @payroll.joins(:employee)
-    @payroll = @payroll.joins('left join holidays on workday = holidate')
-    @payroll = @payroll.select(sql).group('payments.finger').order('employees.sort')
-  end
-
   private
+
+    def payroll_query(s_date, e_date)
+      sql = <<-SQL
+                    employees.sort, employees.finger,
+                    employees.name, employees.surname,
+                    employees.term,
+                    sum(case
+                        when dayofweek(workday) = 1  and holidate is null
+                        then pay_duration                      else 0
+                        end) as sun,
+                    sum(case
+                        when dayofweek(workday) = 2 and holidate is null
+                        then pay_duration                      else 0
+                        end) as mon,
+                    sum(case
+                        when dayofweek(workday) = 3  and holidate is null
+                        then pay_duration                      else 0
+                        end) as tue    ,
+                    sum(case
+                        when dayofweek(workday) = 4  and holidate is null
+                        then pay_duration                      else 0
+                        end) as wed   ,
+                    sum(case
+                        when dayofweek(workday) = 5  and holidate is null
+                        then pay_duration                      else 0
+                        end) as thu,
+                    sum(case
+                        when dayofweek(workday) = 6  and holidate is null
+                        then pay_duration                      else 0
+                        end) as fri,
+                    sum(case
+                        when dayofweek(workday) = 7  and holidate is null
+                        then pay_duration                      else 0
+                        end) as sat,
+                    sum(case
+                        when holidate is not null
+                        then pay_duration                      else 0
+                        end) as pub
+      SQL
+
+      @payroll = Payment.between(s_date, e_date)
+      @payroll = @payroll.joins(:employee)
+      @payroll = @payroll.joins('left join holidays on workday = holidate')
+      @payroll = @payroll.select(sql).group('payments.finger').order('employees.sort')
+    end
 
     # Use callbacks to share common setup or constraints between actions.
     def set_employee

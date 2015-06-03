@@ -23,20 +23,8 @@ ActiveRecord::Schema.define(version: 20150217122240) do
   end
 
   add_index "clockings", ["clocking"], name: "index_clockings_on_clocking", using: :btree
-  add_index "clockings", ["finger"], name: "index_clockings_on_finger", using: :btree
+  add_index "clockings", ["finger", "clocking"], name: "index_clockings_on_finger_and_clocking", using: :btree
   add_index "clockings", ["workday"], name: "index_clockings_on_workday", using: :btree
-
-  create_table "clockmaster", id: false, force: true do |t|
-    t.integer   "emp"
-    t.string    "fname", limit: 64
-    t.string    "lname", limit: 64
-    t.string    "dir",   limit: 3
-    t.timestamp "clock",            null: false
-    t.date      "wday"
-  end
-
-  add_index "clockmaster", ["clock", "emp"], name: "mas_clock_index", using: :btree
-  add_index "clockmaster", ["wday", "emp"], name: "mas_wday_index", using: :btree
 
   create_table "employees", force: true do |t|
     t.string   "name"

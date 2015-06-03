@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
-  resources :clockings
+  resources :clockings do
+    collection do
+      get :get_import
+      post :import
+    end
+
+  end
 
   resources :holidays
 

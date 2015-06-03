@@ -7,6 +7,35 @@ class ClockingsController < ApplicationController
     @workday = params[:workday].to_date
     @employee  = Employee.where(finger: params[:finger]).first
     @clockings = Clocking.where(finger: params[:finger], workday: @workday).order(:clocking).all
+
+
+    @in_out = []
+    i_time = Date.today.beginning_of_day
+    last_direction = ''
+
+    @clockings.each do | c |
+       unless last_direction == c.direction.strip
+          last_direction = c.direction.strip
+          if c.direction.strip == 'in'
+            i_time = c.clocking
+          else
+            @in_out << [i_time, c.clocking] if c.direction.strip == 'out'
+          end
+       end
+    end
+
+    respond_to do |format|
+      format.html
+      format.pdf {
+        html = render_to_string(action: 'index.html.slim', layout: 'pdf.html.slim')
+        kit = PDFKit.new(html)
+        kit.stylesheets << "#{Rails.root.join('app/assets/stylesheets','pdf.css')}"
+        send_data kit.to_pdf, :filename => 'clockings.pdf', :type => :pdf
+      }
+    end
+
+
+
   end
 
   # GET /clockings/1
@@ -21,6 +50,19 @@ class ClockingsController < ApplicationController
 
   # GET /clockings/1/edit
   def edit
+  end
+
+  def get_import
+  end
+
+  def import
+    if params[:file].present?
+      Clocking.import(params[:file])
+      system('sh sql/import-mysql.sh') ? flash[:notice] = 'Data successfully imported' : flash[:error] =  'Data import failed ! ! !'
+      redirect_to day_employees_path, notice: 'Clockings imported.'
+    else
+      redirect_to get_import_clockings_path, alert: 'Please provide a file to upload ! ! !'
+    end
   end
 
   # POST /clockings

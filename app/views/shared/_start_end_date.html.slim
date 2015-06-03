@@ -1,0 +1,13 @@
+.col-md-4.form-group.roses-date
+  => label_tag 'Start Date'
+  .input-group.date
+    = text_field_tag :s_date, @s_date.strftime('%d %B %Y'), class: 'form-control'
+    span.input-group-addon
+      i.glyphicon.glyphicon-th
+
+.col-md-4.form-group.roses-date
+  =<> label_tag 'End Date'
+  .input-group.date
+    = text_field_tag :e_date, @e_date.strftime('%d %B %Y'), class: 'form-control'
+    span.input-group-addon
+      i.glyphicon.glyphicon-th

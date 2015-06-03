@@ -1,27 +1,26 @@
 .page-header
-  h2 Payroll #{@s_date.strftime('%d %B %Y')} to #{@e_date.strftime('%d %B %Y')}
+  h2
+    | Payroll
+    small< #{@s_date.strftime('%A, %d %B %Y')} to #{@e_date.strftime('%A, %d %B %Y')}
 
 .row.show-grid
-  /= bootstrap_form_tag url: payroll_employees_path, :method => :post, :html => { :class => 'form-inline', :role => 'form' } do
   = form_tag payroll_employees_path, :method => :post do
     .form-inline
-      .col-md-4.form-group
-        => label_tag 'Start Date'
-        = date_select :filter, :s_date, default: @s_date
-      .col-md-4.form-group
-        =<> label_tag 'End Date'
-        = date_select :filter, :e_date, default: @e_date
-      .col-md-3.form-group.text-right
-        =<> label_tag 'Export csv'
-        = check_box_tag :export, class: 'form_control datepicker'
-      .col-md-1.text-right
-        button.btn.btn-default.btn-xs [type='submit']
+      = render partial: 'shared/start_end_date'
+      /.col-md-3.form-group.text-right
+      /  =<> label_tag 'Export csv'
+      /  = check_box_tag :export, class: 'form_control'
+      .col-md-4.text-right
+        /button.btn.btn-default.btn-sm [type='submit']
+          span.glyphicon.glyphicon-download-alt
+        /=> link_to payroll_export_employees_path, :class => 'btn btn-default btn-sm', :target => '_blank' do
+        => link_to url_for(params.merge(:format => :csv)), :class => 'btn btn-default btn-sm', title: 'Download csv' do
+          span.glyphicon.glyphicon-download-alt
+
+        /=  ' '
+        button.btn.btn-default.btn-sm [type='submit']
           span.glyphicon.glyphicon-refresh
 
-
-
-        /.glyphicon-refresh
-        /  .glyphicon-play
 
 hr
 .table-responsive
@@ -32,34 +31,40 @@ hr
         th Reader
         th Name
         th Surname
-        th.text-right Fri
-        th.text-right.bg-warning Sat
-        th.text-right.bg-warning Sun
-        th.text-right Mon
-        th.text-right Tue
+
         th.text-right Wed
         th.text-right Thu
-        th.text-right.bg-warning Pub
+        th.text-right Fri
+        th.text-right Mon
+        th.text-right Tue
         th.text-right.bg-success Tot
+        th
+        th.text-right.bg-warning Sat
+        th.text-right.bg-warning Sun
+        th.text-right.bg-warning Pub
+
 
 
       - @payroll.each do | p |
         tr class=(p.term == 'P' ? 'text-primary' : '')
           td= p.sort
           td= "P#{p.finger.to_s.rjust(4, '0')}"
-          td= p.name
-          td= p.surname
+          td= p.name.capitalize
+          td= p.surname.capitalize
           /td.text-right.text-warning= p.duration.strftime('%H:%M')
           /td.text-right.text-success= number_with_precision p.pay_duration, precision: 2
-          td.text-right= number_with_precision  p.fri, precision: 2
-          td.text-right.bg-warning= number_with_precision  p.sat, precision: 2
-          td.text-right.bg-warning= number_with_precision  p.sun, precision: 2
-          td.text-right= number_with_precision  p.mon, precision: 2
-          td.text-right= number_with_precision  p.tue, precision: 2
+
           td.text-right= number_with_precision  p.wed, precision: 2
           td.text-right= number_with_precision  p.thu, precision: 2
-          td.text-right.bg-warning= number_with_precision  p.pub, precision: 2
+          td.text-right= number_with_precision  p.fri, precision: 2
+          td.text-right= number_with_precision  p.mon, precision: 2
+          td.text-right= number_with_precision  p.tue, precision: 2
           td.text-right.bg-success: b= number_with_precision  (p.sun + p.mon + p.tue + p.wed + p.thu + p.fri + p.sat + p.pub), precision: 2
+          td
+          td.text-right.bg-warning= number_with_precision p.sat, precision: 2
+          td.text-right.bg-warning= number_with_precision p.sun, precision: 2
+          td.text-right.bg-warning= number_with_precision  p.pub, precision: 2
+
 
 javascript:
   $('.datepicker').datepicker({
