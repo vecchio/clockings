@@ -58,7 +58,81 @@ class ClockingsController < ApplicationController
   def import
     if params[:file].present?
       Clocking.import(params[:file])
-      system('sh sql/import-mysql.sh') ? flash[:notice] = 'Data successfully imported' : flash[:error] =  'Data import failed ! ! !'
+      # system('sh sql/import-mysql.sh') ? flash[:notice] = 'Data successfully imported' : flash[:error] =  'Data import failed ! ! !'
+
+      sql = <<-SQL
+                  drop table if exists tmp_daterange;
+                  drop table if exists tmp_clockinout;
+                  drop table if exists tmp_clockinoutclean_o;
+                  drop table if exists tmp_clockinoutclean;
+                  drop table if exists tmp_clockinoutduration;
+                  drop table if exists tmp_clockempday;
+
+                  create temporary table tmp_daterange as
+                    select max(workday) as s_date, current_date as e_date from payments;
+                  update tmp_daterange set e_date = date_add(s_date, interval 50 day);
+                  delete from payments where workday >= (select s_date from tmp_daterange );
+
+                  create temporary table tmp_clockinout as
+                    select i.finger, i.name, i.surname, i.workday, i.direction as idir, i.clocking as iclock, o.direction as odir, o.clocking as oclock
+                    from clockings i, clockings o, tmp_daterange d
+                    where i.workday between  d.s_date and d.e_date
+                          and o.workday between  d.s_date and d.e_date
+                          and i.finger = o.finger
+                          and i.workday = o.workday
+                          and i.direction = 'in'
+                          and o.direction = 'out'
+                          and o.clocking  > i.clocking
+                    order by finger, iclock, oclock;
+
+                  delete from tmp_clockinout where oclock <  iclock;
+
+                  create temporary table tmp_clockinoutclean_o as
+                    select finger, name, surname, workday, idir, iclock, odir, min(oclock) as oclock
+                    from tmp_clockinout
+                    group by finger, name, surname, workday, idir, iclock, odir
+                    order by finger, iclock, oclock;
+
+                  create temporary table tmp_clockinoutclean as
+                    select finger, name, surname, workday, idir, min(iclock) as iclock, odir, oclock
+                    from tmp_clockinoutclean_o
+                    group by finger, name, surname, workday, idir, oclock, odir
+                    order by finger, iclock, oclock;
+
+                  create temporary table tmp_clockinoutduration as
+                    select *, time_to_sec(timediff(oclock,iclock)) as dur
+                    from tmp_clockinoutclean
+                    order by finger, iclock;
+
+                  create temporary table tmp_clockempday as
+                    select  finger, name, surname, workday,
+                      sec_to_time(sum(dur)) as dur, count(1) as entries, cast(0 as decimal(8,2)) as pay,
+                      case when extract(hour from min(iclock)) >= 16 and extract(minute from min(Iclock)) >= 15
+                        then 1 else 0
+                      end as night,
+                      time(min(iclock)) as arrive
+                    from tmp_clockinoutduration
+                    group by finger, name, surname, workday
+                    order by finger, workday;
+
+                  update tmp_clockempday set pay = cast((((extract(hour from dur) * 60) + (extract(minute from dur) + 50))/60) as decimal(8,2));
+                  update tmp_clockempday set pay = truncate(pay, 0) 	where (pay - truncate(pay, 0)) between 0.0 and 0.11;
+                  update tmp_clockempday set pay = (truncate(pay, 0)+ 0.25)  where (pay - truncate(pay, 0)) between 0.12 and 0.25;
+                  update tmp_clockempday set pay = (truncate(pay, 0)+ 0.25)  where (pay - truncate(pay, 0)) between 0.26 and 0.36;
+                  update tmp_clockempday set pay = (truncate(pay, 0)+ 0.5) 	where (pay - truncate(pay, 0)) between 0.37 and 0.5;
+                  update tmp_clockempday set pay = (truncate(pay, 0)+ 0.5) 	where (pay - truncate(pay, 0)) between 0.51 and 0.61;
+                  update tmp_clockempday set pay = (truncate(pay, 0)+ 0.75)  where (pay - truncate(pay, 0)) between 0.62 and 0.75;
+                  update tmp_clockempday set pay = (truncate(pay, 0)+ 0.75)  where (pay - truncate(pay, 0)) between 0.76 and 0.86;
+                  update tmp_clockempday set pay = (truncate(pay, 0)+ 1.00)  where (pay - truncate(pay, 0)) > 0.86;
+                  insert into payments (finger, pay_duration, workday, duration, entries, night, arrive)
+                    select finger, pay, workday, dur, entries, night, arrive from tmp_clockempday;
+
+      SQL
+
+      sql.split(';').each do |s|
+        ActiveRecord::Base.connection.execute(s) if s.present?
+      end
+
       redirect_to day_employees_path, notice: 'Clockings imported.'
     else
       redirect_to get_import_clockings_path, alert: 'Please provide a file to upload ! ! !'
