@@ -17,12 +17,13 @@
                 = l
         .col-md-4
           .form-group
-            div.checkbox
-              = check_box_tag :show_all, class: 'form_control'
-              =< label_tag 'Show Old', nil, for: :show_all
+            = text_field_tag :q, params[:q], class: 'form_control', style: 'width:135px;'
           .form-group
-            = text_field_tag :q, '', class: 'form_control'
-
+            div.checkbox
+              =<> check_box_tag :show_all, true, params[:show_all].present? ? true : false, {class: 'form_control'}
+              =<> label_tag 'Show Old', nil, for: :show_all
+              =<> check_box_tag :payroll, true, params[:payroll].present? ? true : false, {class: 'form_control'}
+              =<> label_tag 'Payroll', nil, for: :payroll
           /.col-md-2
           span.pull-right
             => link_to url_for(params.merge(:format => :pdf)), :class => 'btn btn-default btn-sm' do
@@ -42,7 +43,7 @@
         .col-md-4
           .form-group
             div.checkbox
-              = check_box_tag :late_comers, class: 'form_control'
+              = check_box_tag :late_comers, true, params[:late_comers].present? ? true : false, {class: 'form_control'}
               =< label_tag 'Show only late comers', nil, for: :late_comers
 
   hr

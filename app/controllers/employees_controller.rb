@@ -15,10 +15,11 @@ class EmployeesController < ApplicationController
 
   def filter
     @employees = Employee.order(:surname)
-    @employees = @employees.active unless params[:show_all]
+    @employees = @employees.active                                  unless params[:show_all]
+    @employees = @employees.use_in_payroll                          if params[:payroll]
     @employees = @employees.filtered(params[:q])                    if params[:q].present?
     @employees = @employees.surname_start(params['surname_start'])  if params[:surname_start]
-    @employees = @employees.limit(20)                               unless params[:filter] || params[:surname_start]
+    @employees = @employees.limit(50)                               unless params[:filter] || params[:surname_start]
     @employees = @employees.all
   end
 
@@ -30,6 +31,8 @@ class EmployeesController < ApplicationController
     @payments = @payments.between(@s_date, @s_date)
     @payments = @payments.merge(Employee.filtered(params[:q]))                    if params[:q].present?
     @payments = @payments.merge(Employee.surname_start(params['surname_start']))  if params[:surname_start]
+    @payments = @payments.merge(Employee.active)                                  unless params[:show_all]
+    @payments = @payments.merge(Employee.use_in_payroll)                          if params[:payroll]
 
     sql = <<-SQL
                   sum(case
@@ -226,7 +229,7 @@ class EmployeesController < ApplicationController
       SQL
 
       @payroll = Payment.between(s_date, e_date)
-      @payroll = @payroll.joins(:employee)
+      @payroll = @payroll.joins(:employee).merge(Employee.use_in_payroll)
       @payroll = @payroll.joins('left join holidays on workday = holidate')
       @payroll = @payroll.select(sql).group('payments.finger').order('employees.sort')
     end
@@ -238,6 +241,6 @@ class EmployeesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def employee_params
-      params.require(:employee).permit(:name, :surname, :sort, :finger, :filter, :term, :employed_from, :employed_to)
+      params.require(:employee).permit(:name, :surname, :sort, :finger, :filter, :term, :include_in_payroll, :employed_from, :employed_to)
     end
 end
