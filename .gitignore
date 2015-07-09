@@ -16,6 +16,7 @@
 /log/*.log
 /config/database.yml
 /config/secrets.yml
+/public/assets/*
 /tmp
 /.idea
 /sql-work
