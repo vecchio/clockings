@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150217122240) do
+ActiveRecord::Schema.define(version: 20150709054309) do
 
   create_table "clockings", force: true do |t|
     t.integer  "finger"
@@ -31,11 +31,12 @@ ActiveRecord::Schema.define(version: 20150217122240) do
     t.string   "surname"
     t.integer  "sort"
     t.integer  "finger"
-    t.string   "term",          limit: 1, default: "T"
+    t.string   "term",               limit: 1, default: "T"
     t.date     "employed_from"
     t.date     "employed_to"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "include_in_payroll",           default: true
   end
 
   add_index "employees", ["finger"], name: "index_employees_on_finger", using: :btree

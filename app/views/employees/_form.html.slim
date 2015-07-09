@@ -29,6 +29,10 @@
       = f.label :term
       br
       = f.select :term, options_for_select({ Permanent: 'P', Temporary: 'T' }, f.object.term),  class: 'form-control'
+    .form-group.col-sm-6
+      = f.label :include_in_payroll
+      br
+      = f.check_box :include_in_payroll
   .col-sm-12
     .form-group.col-sm-6.roses-date
       = f.label :employed_from

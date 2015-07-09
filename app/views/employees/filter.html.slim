@@ -16,11 +16,13 @@
     = form_tag filter_employees_path, :method => :post do
       .form-inline
         .form-group
-          = text_field_tag :q, '', class: 'form_control'
+          = text_field_tag :q, params[:q], class: 'form_control', style: 'width:135px;'
         .form-group
           div.checkbox
-            = check_box_tag  :show_all, class: 'form_control'
-            =< label_tag 'Show Old', nil,  for: :show_all
+            =<> check_box_tag :show_all, true,  params[:show_all].present? ? true : false, {class: 'form_control'}
+            =<> label_tag 'Show Old', nil,  for: :show_all
+            =<> check_box_tag  :payroll, true, params[:payroll].present? ? true : false, {class: 'form_control'}
+            =<> label_tag 'Payroll', nil,  for: :payroll
         span.pull-right
           button.btn.btn-default.btn-sm [type='submit']
             span.glyphicon.glyphicon-refresh
@@ -36,6 +38,7 @@ hr
         th Name
         th Surname
         th Term
+        th Pay
         th Employed
         th.col-md-2
     tbody
@@ -48,6 +51,7 @@ hr
           td= employee.name.capitalize
           td= employee.surname.capitalize
           td= employee.term == 'P' ? 'Perm' : 'Temp'
+          td= employee.include_in_payroll? ? 'P' : ''
           td= employee.employed_from.strftime('%d %b %Y')
           td: span.small
             - if employee.employed_to <= Date.today
