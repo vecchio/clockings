@@ -8,15 +8,15 @@ class Clocking < ActiveRecord::Base
     earliest_clocking = Time.now + 1.year
     CSV.foreach(file.path, headers: true) do |r|
       row =  r.to_hash
-      clocking = row['DateTime'].to_date
+      clocking = row['DateTime'].to_datetime
       unless Clocking.exists?(finger: row['EmpNo'], clocking: row['DateTime'].to_datetime)
-        workday  = clocking
+        workday  = clocking.to_date
         workday  = workday - 1.day if row['DateTime'].to_datetime.hour >= 0 && row['DateTime'].to_datetime.hour < 5
         Clocking.create!(finger:    row['EmpNo'],
                          clocking:  clocking,
                          name:      row['Name'],
                          surname:   row['Surname'],
-                         direction: row['IN/Out Button'],
+                         direction: row['IN/Out Button'].strip.downcase,
                          workday:   workday )
       end
       earliest_clocking = clocking if clocking < earliest_clocking
