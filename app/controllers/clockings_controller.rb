@@ -14,12 +14,12 @@ class ClockingsController < ApplicationController
     last_direction = ''
 
     @clockings.each do | c |
-       unless last_direction == c.direction.strip
+       unless last_direction == c.direction.strip.downcase
           last_direction = c.direction.strip
-          if c.direction.strip == 'in'
+          if c.direction.strip.downcase == 'in'
             i_time = c.clocking
           else
-            @in_out << [i_time, c.clocking] if c.direction.strip == 'out'
+            @in_out << [i_time, c.clocking] if c.direction.strip.downcase == 'out'
           end
        end
     end

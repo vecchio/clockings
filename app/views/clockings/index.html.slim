@@ -28,13 +28,13 @@
           td
             - if i > 0
               | #{Time.at(c[0] - out).utc.strftime('%H:%M:%S')} ~
-              =<> distance_of_time_in_words c[0], out
+              i[style='color:DarkGray;']=<> distance_of_time_in_words c[0], out
               - tot_out += (c[0] - out)
           td= c[0].strftime('%H:%M:%S')
           td= c[1].strftime('%H:%M:%S')
           td
             | #{Time.at(c[1] - c[0]).utc.strftime('%H:%M:%S')} ~
-            =<> distance_of_time_in_words c[0], c[1]
+            i[style='color:DarkGray;']=<> distance_of_time_in_words c[0], c[1]
             - tot_in += (c[1] - c[0])
 
           - out = c[1]

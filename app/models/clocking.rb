@@ -16,7 +16,7 @@ class Clocking < ActiveRecord::Base
                          clocking:  clocking,
                          name:      row['Name'],
                          surname:   row['Surname'],
-                         direction: row['IN/Out Button'],
+                         direction: row['IN/Out Button'].strip.downcase,
                          workday:   workday )
       end
       earliest_clocking = clocking if clocking < earliest_clocking
