@@ -158,9 +158,9 @@ class EmployeesController < ApplicationController
 
 
     csv_string = CSV.generate do |csv|
-      csv << %w(no roses name surname wed thu fri mon tue sat sun pub)
+      csv << %w(no roses name surname wed thu fri mon tue tot sat sun pub)
       @payroll.each do |p|
-        csv << [p.sort,"P#{p.finger.to_s.rjust(4, '0')}",p.name,p.surname,p.wed,p.thu,p.fri,p.mon,p.tue,p.sat,p.sun,p.pub]
+        csv << [p.sort,"P#{p.finger.to_s.rjust(3, '0')}",p.name,p.surname,p.wed,p.thu,p.fri,p.mon,p.tue,(p.wed+p.thu+p.fri+p.mon+p.tue),p.sat,p.sun,p.pub]
       end
     end
     csv_string.gsub!(/\n/, "\r\n")
@@ -191,47 +191,49 @@ class EmployeesController < ApplicationController
 
     def payroll_query(s_date, e_date)
       sql = <<-SQL
-                    employees.sort, employees.finger,
-                    employees.name, employees.surname,
-                    employees.term,
+                    employees.sort, employees.finger, employees.name, employees.surname, employees.term,
                     sum(case
                         when dayofweek(workday) = 1  and holidate is null
-                        then pay_duration                      else 0
+                        then ifnull(pay_duration, 0)                      else 0
                         end) as sun,
                     sum(case
                         when dayofweek(workday) = 2 and holidate is null
-                        then pay_duration                      else 0
+                        then ifnull(pay_duration, 0)                      else 0
                         end) as mon,
                     sum(case
                         when dayofweek(workday) = 3  and holidate is null
-                        then pay_duration                      else 0
+                        then ifnull(pay_duration, 0)                      else 0
                         end) as tue    ,
                     sum(case
                         when dayofweek(workday) = 4  and holidate is null
-                        then pay_duration                      else 0
+                        then ifnull(pay_duration, 0)                      else 0
                         end) as wed   ,
                     sum(case
                         when dayofweek(workday) = 5  and holidate is null
-                        then pay_duration                      else 0
+                        then ifnull(pay_duration, 0)                      else 0
                         end) as thu,
                     sum(case
                         when dayofweek(workday) = 6  and holidate is null
-                        then pay_duration                      else 0
+                        then ifnull(pay_duration, 0)                      else 0
                         end) as fri,
                     sum(case
                         when dayofweek(workday) = 7  and holidate is null
-                        then pay_duration                      else 0
+                        then ifnull(pay_duration, 0)                      else 0
                         end) as sat,
                     sum(case
                         when holidate is not null
-                        then pay_duration                      else 0
-                        end) as pub
+                        then ifnull(pay_duration, 0)                      else 0
+                        end) as pub,
+                    sum(1) as records
       SQL
 
-      @payroll = Payment.between(s_date, e_date)
-      @payroll = @payroll.joins(:employee).merge(Employee.use_in_payroll)
+      join_payroll = "left join payments on payments.finger = employees.finger and payments.workday between '#{@s_date}' AND '#{@s_date}'"
+      @payroll = Employee.joins(join_payroll) if params[:show_all].present?
+      @payroll = Employee.use_in_payroll.joins(join_payroll) unless params[:show_all].present?
       @payroll = @payroll.joins('left join holidays on workday = holidate')
-      @payroll = @payroll.select(sql).group('payments.finger').order('employees.sort')
+      @payroll = @payroll.select(sql)
+      @payroll = @payroll.group('employees.sort, employees.finger, employees.name, employees.surname, employees.term')
+      @payroll = @payroll.order('employees.sort')
     end
 
     # Use callbacks to share common setup or constraints between actions.

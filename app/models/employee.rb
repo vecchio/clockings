@@ -16,7 +16,7 @@ class Employee < ActiveRecord::Base
   end
 
   def long_finger
-    "P#{finger.to_s.rjust(4, '0')}"
+    "P#{finger.to_s.rjust(3, '0')}"
   end
   protected
 
