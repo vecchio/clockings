@@ -21,7 +21,7 @@ class EmployeesController < ApplicationController
     @employees = @employees.use_in_payroll                          if params[:payroll].present?
     @employees = @employees.filtered(params[:q])                    if params[:q].present?
     @employees = @employees.surname_start(params['surname_start'])  if params[:surname_start]
-    @employees = @employees.limit(50)                               unless params[:filter] || params[:surname_start]
+    # @employees = @employees.limit(50)                               unless params[:filter] || params[:surname_start]
     @employees = @employees.all
   end
 
