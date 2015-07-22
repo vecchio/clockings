@@ -14,9 +14,10 @@ class EmployeesController < ApplicationController
   end
 
   def filter
+    params[:payroll] = true unless params.has_key?(:q)
     @employees = Employee.order(:surname)
     @employees = @employees.active                                  unless params[:show_all]
-    @employees = @employees.use_in_payroll                          if params[:payroll]
+    @employees = @employees.use_in_payroll                          if params[:payroll].present?
     @employees = @employees.filtered(params[:q])                    if params[:q].present?
     @employees = @employees.surname_start(params['surname_start'])  if params[:surname_start]
     @employees = @employees.limit(50)                               unless params[:filter] || params[:surname_start]
@@ -25,6 +26,22 @@ class EmployeesController < ApplicationController
 
   def day
     get_param_dates
+
+    params[:payroll] = true unless params.has_key?(:q)
+    @entries        = 5
+    @hours          = 8.75
+    @morning_hour   = 7
+    @morning_minute = 35
+    @evening_hour   = 16
+    @evening_minute = 35
+    if params.has_key?(:q)
+      @entries        = params[:entries].to_i
+      @hours          = params[:hours].to_f
+      @morning_hour   = params[:latecomers]['morning(4i)'].to_i
+      @morning_minute = params[:latecomers]['morning(5i)'].to_i
+      @evening_hour   = params[:latecomers]['evening(4i)'].to_i
+      @evening_minute = params[:latecomers]['evening(5i)'].to_i
+    end
 
     @payments = Payment.joins(:employee)
     # @payments = @payments.active unless params[:show_all]
@@ -42,16 +59,22 @@ class EmployeesController < ApplicationController
                       when employees.term = 'T'
                       then 1 else 0 end) as temps,
                   sum(case
+                      when payments.entries > #{@entries}
+                      then 1 else 0 end) as entries,
+                  sum(case
+                      when payments.pay_duration < #{@hours}
+                      then 1 else 0 end) as loafers,
+                  sum(case
                         when extract(hour from arrive) > 5 and extract(hour from arrive) < 16 then
                           case
-                            when extract(hour from arrive) < 7 then 0
-                            when extract(hour from arrive) = 7 and extract(minute from arrive) < 15 then 0
+                            when extract(hour from arrive) < #{@morning_hour} then 0
+                            when extract(hour from arrive) = #{@morning_hour} and extract(minute from arrive) < #{@morning_minute} then 0
                             else 1
                           end
 
-                        when extract(hour from arrive) >= 16 then
+                        when extract(hour from arrive) >= #{@evening_hour} then
                           case
-                            when extract(hour from arrive) = 16 and extract(minute from arrive) <= 30
+                            when extract(hour from arrive) = #{@evening_hour} and extract(minute from arrive) <= #{@evening_minute}
                             then 0
                             else 1
                           end
@@ -65,22 +88,22 @@ class EmployeesController < ApplicationController
                   case
                       when extract(hour from arrive) > 5 and extract(hour from arrive) < 16 then
                         case
-                          when extract(hour from arrive) < 7 then 0
-                          when extract(hour from arrive) = 7 and extract(minute from arrive) < 15 then 0
+                          when extract(hour from arrive) < #{@morning_hour} then 0
+                          when extract(hour from arrive) = #{@morning_hour} and extract(minute from arrive) < #{@morning_minute} then 0
                           else 1
                         end
 
-                      when extract(hour from arrive) >= 16 then
-                        case
-                          when extract(hour from arrive) = 16 and extract(minute from arrive) <= 30
-                          then 0
-                          else 1
+                      when extract(hour from arrive) >= #{@evening_hour} then
+                          case
+                            when extract(hour from arrive) = #{@evening_hour} and extract(minute from arrive) <= #{@evening_minute}
+                            then 0
+                            else 1
                         end
                   end as late
     SQL
 
     @payments = @payments.select(sql)
-    @payments = @payments.limit(100)                                              unless params[:filter] || params[:surname_start]
+    # @payments = @payments.limit(100)                                               unless params[:filter] || params[:surname_start]
     @payments = @payments.order(:workday, :finger).all
 
     respond_to do |format|
@@ -158,9 +181,9 @@ class EmployeesController < ApplicationController
 
 
     csv_string = CSV.generate do |csv|
-      csv << %w(no roses name surname wed thu fri mon tue sat sun pub)
+      csv << %w(no roses name surname wed thu fri mon tue tot sat sun pub)
       @payroll.each do |p|
-        csv << [p.sort,"P#{p.finger.to_s.rjust(4, '0')}",p.name,p.surname,p.wed,p.thu,p.fri,p.mon,p.tue,p.sat,p.sun,p.pub]
+        csv << [p.sort,"P#{p.finger.to_s.rjust(3, '0')}",p.name,p.surname,p.wed,p.thu,p.fri,p.mon,p.tue,(p.wed+p.thu+p.fri+p.mon+p.tue),p.sat,p.sun,p.pub]
       end
     end
     csv_string.gsub!(/\n/, "\r\n")
@@ -191,47 +214,49 @@ class EmployeesController < ApplicationController
 
     def payroll_query(s_date, e_date)
       sql = <<-SQL
-                    employees.sort, employees.finger,
-                    employees.name, employees.surname,
-                    employees.term,
+                    employees.sort, employees.finger, employees.name, employees.surname, employees.term,
                     sum(case
                         when dayofweek(workday) = 1  and holidate is null
-                        then pay_duration                      else 0
+                        then ifnull(pay_duration, 0)                      else 0
                         end) as sun,
                     sum(case
                         when dayofweek(workday) = 2 and holidate is null
-                        then pay_duration                      else 0
+                        then ifnull(pay_duration, 0)                      else 0
                         end) as mon,
                     sum(case
                         when dayofweek(workday) = 3  and holidate is null
-                        then pay_duration                      else 0
+                        then ifnull(pay_duration, 0)                      else 0
                         end) as tue    ,
                     sum(case
                         when dayofweek(workday) = 4  and holidate is null
-                        then pay_duration                      else 0
+                        then ifnull(pay_duration, 0)                      else 0
                         end) as wed   ,
                     sum(case
                         when dayofweek(workday) = 5  and holidate is null
-                        then pay_duration                      else 0
+                        then ifnull(pay_duration, 0)                      else 0
                         end) as thu,
                     sum(case
                         when dayofweek(workday) = 6  and holidate is null
-                        then pay_duration                      else 0
+                        then ifnull(pay_duration, 0)                      else 0
                         end) as fri,
                     sum(case
                         when dayofweek(workday) = 7  and holidate is null
-                        then pay_duration                      else 0
+                        then ifnull(pay_duration, 0)                      else 0
                         end) as sat,
                     sum(case
                         when holidate is not null
-                        then pay_duration                      else 0
-                        end) as pub
+                        then ifnull(pay_duration, 0)                      else 0
+                        end) as pub,
+                    sum(1) as records
       SQL
 
-      @payroll = Payment.between(s_date, e_date)
-      @payroll = @payroll.joins(:employee).merge(Employee.use_in_payroll)
+      join_payroll = "left join payments on payments.finger = employees.finger and payments.workday between '#{@s_date}' AND '#{@s_date}'"
+      @payroll = Employee.joins(join_payroll) if params[:show_all].present?
+      @payroll = Employee.use_in_payroll.joins(join_payroll) unless params[:show_all].present?
       @payroll = @payroll.joins('left join holidays on workday = holidate')
-      @payroll = @payroll.select(sql).group('payments.finger').order('employees.sort')
+      @payroll = @payroll.select(sql)
+      @payroll = @payroll.group('employees.sort, employees.finger, employees.name, employees.surname, employees.term')
+      @payroll = @payroll.order('employees.sort')
     end
 
     # Use callbacks to share common setup or constraints between actions.

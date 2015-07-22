@@ -2,23 +2,25 @@
   h2
     | Payroll
     small< #{@s_date.strftime('%A, %d %B %Y')} to #{@e_date.strftime('%A, %d %B %Y')}
+  h4.text-success
+    => params[:show_all].present? ? 'Including Employees NOT on the Payroll' : 'Only Employees ON the Payroll'
+    small.text-success
+      | (
+      i<> Include in payroll
+      | on the Employee
+      =< params[:show_all].present? ? 'is NOT ticked )' : 'IS ticked )'
 
 .row.show-grid
   = form_tag payroll_employees_path, :method => :post do
     .form-inline
       = render partial: 'shared/start_end_date'
-      /.col-md-3.form-group.text-right
-      /  =<> label_tag 'Export csv'
-      /  = check_box_tag :export, class: 'form_control'
-      .col-md-4.text-right
-        /button.btn.btn-default.btn-sm [type='submit']
+      .col-md-2.text-right
+        => label_tag 'NOT on Payroll'
+        =< check_box_tag :show_all, true, params[:show_all].present? ? true : false, {class: 'form_control'}
+      .col-md-2.text-right
+        => link_to url_for(params.merge(:format => :csv)), :class => 'btn btn-info btn-sm', title: 'Download csv' do
           span.glyphicon.glyphicon-download-alt
-        /=> link_to payroll_export_employees_path, :class => 'btn btn-default btn-sm', :target => '_blank' do
-        => link_to url_for(params.merge(:format => :csv)), :class => 'btn btn-default btn-sm', title: 'Download csv' do
-          span.glyphicon.glyphicon-download-alt
-
-        /=  ' '
-        button.btn.btn-default.btn-sm [type='submit']
+        button.btn.btn-success.btn-sm [type='submit']
           span.glyphicon.glyphicon-refresh
 
 
@@ -48,7 +50,7 @@ hr
       - @payroll.each do | p |
         tr class=(p.term == 'P' ? 'text-primary' : '')
           td= p.sort
-          td= "P#{p.finger.to_s.rjust(4, '0')}"
+          td= "P#{p.finger.to_s.rjust(3, '0')}"
           td= p.name.capitalize
           td= p.surname.capitalize
           /td.text-right.text-warning= p.duration.strftime('%H:%M')

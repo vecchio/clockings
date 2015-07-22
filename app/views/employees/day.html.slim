@@ -5,62 +5,123 @@
 
 - unless request.format == :pdf
   = form_tag day_employees_path, method: :post do
-    .form-inline
-      .row.roses-row
-        .col-md-8
-          - letters = Employee.all.collect { |s| s.surname[0] }.uniq
-          - ('A'..'Z').each do |l|
-            span.link-letter
-              - if letters.include?(l)
-                = link_to l, url_for(params.merge(surname_start: l)), class: 'btn btn-default btn-xs'
-              - else
-                = l
-        .col-md-4
-          .form-group
-            = text_field_tag :q, params[:q], class: 'form_control', style: 'width:135px;'
-          .form-group
-            div.checkbox
-              =<> check_box_tag :show_all, true, params[:show_all].present? ? true : false, {class: 'form_control'}
-              =<> label_tag 'Show Old', nil, for: :show_all
-              =<> check_box_tag :payroll, true, params[:payroll].present? ? true : false, {class: 'form_control'}
-              =<> label_tag 'Payroll', nil, for: :payroll
-          /.col-md-2
-          span.pull-right
-            => link_to url_for(params.merge(:format => :pdf)), :class => 'btn btn-default btn-sm' do
-              span.glyphicon.glyphicon-print
-
-            button.btn.btn-default.btn-sm [type='submit']
-              span.glyphicon.glyphicon-refresh
-
-      .row
-        .col-md-2
+    .row.roses-row
+      .form-inline
+        .col-md-3
           .form-group.roses-date
             .input-group.date
               = text_field_tag :s_date, @s_date.strftime('%d %B %Y'), class: 'form-control'
               span.input-group-addon
                 i.glyphicon.glyphicon-th
 
-        .col-md-4
+        .form-group.col-md-9
+          b<> Latecomers:
+          = time_select :latecomers, :morning, {ignore_date: true, :default => {:hour => @morning_hour, :minute => @morning_minute}}
+          b<> ~
+          = time_select :latecomers, :evening, {ignore_date: true, :default => {:hour => @evening_hour, :minute => @evening_minute}}
+          b<> Only:
           .form-group
             div.checkbox
               = check_box_tag :late_comers, true, params[:late_comers].present? ? true : false, {class: 'form_control'}
-              =< label_tag 'Show only late comers', nil, for: :late_comers
+
+          b<> &nbsp; &nbsp;  &nbsp; Entries:
+          = select_tag :entries, options_for_select(1..50, @entries)
+          b<> Only
+          .form-group
+            div.checkbox
+              = check_box_tag :walkers, true, params[:walkers].present? ? true : false, {class: 'form_control'}
+
+          b<> &nbsp; &nbsp;  &nbsp; Hours:
+          = select_tag :hours, options_for_select((5..9.95).step(0.05).map{|d| '%.2f' % d }, @hours.to_s.ljust(4, '0'))
+          b<> Only
+          .form-group
+            div.checkbox
+              = check_box_tag :loafers, true, params[:loafers].present? ? true : false, {class: 'form_control'}
+
+    .row.roses-row
+      .form-inline
+        .form-group.col-md-4
+          /=<> label_tag 'Names or Surnames containing:'
+          b<> Names or Surnames containing:
+          = text_field_tag :q, params[:q], class: 'form_control', style: 'width:140px;'
+        .form-group.col-md-2
+          b<> Service Terminated:
+          =<> check_box_tag :show_all, true, params[:show_all].present? ? true : false, {class: 'form_control'}
+        .form-group.col-md-2
+          b<> Payroll Only:
+          =<> check_box_tag :payroll, true, params[:payroll], {class: 'form_control'}
+        .col-md-4
+          span.pull-right
+            => link_to url_for(params.merge(:format => :pdf)), :class => 'btn btn-info btn-sm' do
+              span.glyphicon.glyphicon-print
+
+            button.btn.btn-success.btn-sm [type='submit']
+              span.glyphicon.glyphicon-refresh
+
+  .row
+    .col-md-12
+      - letters = Employee.all.collect { |s| s.surname[0] }.uniq
+      - ('A'..'Z').each do |l|
+        span.link-letter
+          - if letters.include?(l)
+            = link_to l, url_for(params.merge(surname_start: l)), class: 'btn btn-default btn-xs'
+          - else
+            = l
+      span< surnames starting with  . . . ( including filter above )
 
   hr
 
 .table-responsive
-  table.table.table-condensed.table-bordered.bg-success
+  table.table.table-condensed.table-bordered
     thead
       tr
-        th.text-center Permanent Employees
-        th.text-center Temporary Employees
-        th.text-center Latecomers
+        th.text-center.text-primary[width='20%'] Permanent
+        th.text-center[width='20%'] Temporary
+        th.text-center.danger[width='20%'] Latecomers
+        th.text-center.success[width='20%'] Entries
+        th.text-center.info[width='20%'] Loafers
+
+      tr
+        td.text-center colspan=2
+          span.text-success
+            => params[:show_all].present? ? 'Current and Terminated Employees' : 'Current Employees'
+            => params[:payroll].present? ? 'on the Payroll' : 'including NOT on the Payroll'
+            - if params[:q].present?
+              br
+              - brk = true
+              => "Names or Surnames containing \"#{params[:q]}\""
+            - if params[:surname_start].present?
+              - unless brk
+                br
+              => ' || Surnames starting with'
+              => params[:surname_start].upcase
+
+        td.text-center.danger
+          span.text-success
+            |  #{@morning_hour.to_s.rjust(2, '0')}:#{@morning_minute.to_s.rjust(2, '0')} ~ #{@evening_hour.to_s.rjust(2, '0')}:#{@evening_minute.to_s.rjust(2, '0')}
+            - if params[:late_comers]
+              b  ONLY
+
+        td.text-center.success
+          span.text-success
+            |  More than #{@entries}
+            - if params[:walkers]
+              b  ONLY
+
+        td.text-center.info
+          span.text-success
+            = "< #{@hours.to_s.ljust(4, '0')} hrs"
+            - if params[:loafers]
+              b  ONLY
+
     tbody
       - @totals.each do | t |
         tr
-          td.text-center= t.perms
+          td.text-center.text-primary= t.perms
           td.text-center= t.temps
-          td.text-center= t.late
+          td.text-center.danger= t.late
+          td.text-center.success= t.entries
+          td.text-center.info= t.loafers
 
 .table-responsive
   table.table-condensed.table.table-hover
@@ -78,19 +139,23 @@
         th.col-md-1
     /tbody
     - @payments.each do | p |
+
       - show = true
       - show = false if params[:late_comers] && p.late == 0
+      - show = false if params[:walkers] && p.entries < @entries
+      - show = false if params[:loafers] && p.pay_duration >= @hours
+
       - if show
-        tr class=(p.employee.term == 'P' ? 'text-primary' : '')
+        - row_class = p.employee.term == 'P' ? 'text-primary' : ''
+        tr class=row_class
           td= p.employee.long_finger
           td= p.employee.name.capitalize
           td= p.employee.surname.capitalize
           td= p.workday.strftime('%d %B %Y')
-          td class=(p.late == 1 ? 'danger' : '')
-            = p.arrive.strftime('%H:%M')
-          td.text-right= p.entries
+          td[class=(p.late == 1 ? 'danger' : '')]= p.arrive.strftime('%H:%M')
+          td.text-right[class=(p.entries >= @entries ? ' success' : '')]= p.entries
           td.text-right= p.duration.strftime('%H:%M')
-          td.text-right= number_with_precision  p.pay_duration, precision: 2
+          td.text-right[class=(p.pay_duration < @hours ? 'info' : '')]= number_with_precision  p.pay_duration, precision: 2
           - unless request.format == :pdf
             td
               span.pull-right
