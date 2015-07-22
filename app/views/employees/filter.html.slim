@@ -10,6 +10,8 @@
     - if params[:surname_start].present?
       => ' ~ showing only surnames starting with'
       => params[:surname_start].upcase
+    => ' ~ ordered by '
+    = params[:order].present? ? params[:order] : 'Surname'
 
 .row.roses-row
   = form_tag filter_employees_path, :method => :post do
@@ -24,7 +26,10 @@
       .form-group.col-md-2
         b<> Payroll Only:
         =<> check_box_tag  :payroll, true, params[:payroll], {class: 'form_control'}
-      .form-group.col-md-4
+      .form-group.col-md-2
+        => label_tag 'Order by'
+        =< select_tag :order, options_for_select(%w(Sort Finger Name Surname), params[:order].present? ? params[:order] : 'Surname')
+      .form-group.col-md-2
         span.pull-right
           button.btn.btn-success.btn-sm [type='submit']
             span.glyphicon.glyphicon-refresh
