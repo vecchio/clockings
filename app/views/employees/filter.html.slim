@@ -2,9 +2,35 @@
   = link_to new_employee_path, :class => 'btn btn-default btn-sm' do
     span.glyphicon.glyphicon-plus New
   h2 Employees
+  h5.text-success
+    => params[:show_all].present? ? 'Current and Terminated Employees' : 'Current Employees'
+    => params[:payroll].present? ? 'on the Payroll' : 'including NOT on the Payroll'
+    - if params[:q].present?
+      => " ~ filtering names or surnames containing \"#{params[:q]}\""
+    - if params[:surname_start].present?
+      => ' ~ showing only surnames starting with'
+      => params[:surname_start].upcase
+
+.row.roses-row
+  = form_tag filter_employees_path, :method => :post do
+    .form-inline
+      .form-group.col-md-4
+        /=<> label_tag 'Names or Surnames containing:'
+        b<> Names or Surnames containing:
+        = text_field_tag :q, params[:q], class: 'form_control', style: 'width:140px;'
+      .form-group.col-md-2
+        b<> Service Terminated:
+        =<> check_box_tag :show_all, true,  params[:show_all].present? ? true : false, {class: 'form_control'}
+      .form-group.col-md-2
+        b<> Payroll Only:
+        =<> check_box_tag  :payroll, true, params[:payroll], {class: 'form_control'}
+      .form-group.col-md-4
+        span.pull-right
+          button.btn.btn-success.btn-sm [type='submit']
+            span.glyphicon.glyphicon-refresh
 
 .row
-  .col-md-8
+  .col-md-12
     - letters = Employee.all.collect { |s| s.surname[0] }.uniq
     - ('A'..'Z').each do |l|
       span.link-letter
@@ -12,20 +38,7 @@
           = link_to l, url_for(params.merge(surname_start: l)), class: 'btn btn-default btn-xs'
         - else
           = l
-  .col-md-4
-    = form_tag filter_employees_path, :method => :post do
-      .form-inline
-        .form-group
-          = text_field_tag :q, params[:q], class: 'form_control', style: 'width:135px;'
-        .form-group
-          div.checkbox
-            =<> check_box_tag :show_all, true,  params[:show_all].present? ? true : false, {class: 'form_control'}
-            =<> label_tag 'Show Old', nil,  for: :show_all
-            =<> check_box_tag  :payroll, true, params[:payroll].present? ? true : false, {class: 'form_control'}
-            =<> label_tag 'Payroll', nil,  for: :payroll
-        span.pull-right
-          button.btn.btn-default.btn-sm [type='submit']
-            span.glyphicon.glyphicon-refresh
+    span< surnames starting with  . . . ( including filter above )
 
 hr
 
@@ -40,7 +53,7 @@ hr
         th Term
         th Pay
         th Employed
-        th.col-md-2
+        th.col-md-2 Until
     tbody
       - @employees.each do | employee |
         - rowclass = employee.term == 'P' ? 'text-primary' : ''

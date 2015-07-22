@@ -14,9 +14,10 @@ class EmployeesController < ApplicationController
   end
 
   def filter
+    params[:payroll] = true unless params.has_key?(:q)
     @employees = Employee.order(:surname)
     @employees = @employees.active                                  unless params[:show_all]
-    @employees = @employees.use_in_payroll                          if params[:payroll]
+    @employees = @employees.use_in_payroll                          if params[:payroll].present?
     @employees = @employees.filtered(params[:q])                    if params[:q].present?
     @employees = @employees.surname_start(params['surname_start'])  if params[:surname_start]
     @employees = @employees.limit(50)                               unless params[:filter] || params[:surname_start]
@@ -25,6 +26,22 @@ class EmployeesController < ApplicationController
 
   def day
     get_param_dates
+
+    params[:payroll] = true unless params.has_key?(:q)
+    @entries        = 5
+    @hours          = 8.75
+    @morning_hour   = 7
+    @morning_minute = 35
+    @evening_hour   = 16
+    @evening_minute = 35
+    if params.has_key?(:q)
+      @entries        = params[:entries].to_i
+      @hours          = params[:hours].to_f
+      @morning_hour   = params[:latecomers]['morning(4i)'].to_i
+      @morning_minute = params[:latecomers]['morning(5i)'].to_i
+      @evening_hour   = params[:latecomers]['evening(4i)'].to_i
+      @evening_minute = params[:latecomers]['evening(5i)'].to_i
+    end
 
     @payments = Payment.joins(:employee)
     # @payments = @payments.active unless params[:show_all]
@@ -42,16 +59,22 @@ class EmployeesController < ApplicationController
                       when employees.term = 'T'
                       then 1 else 0 end) as temps,
                   sum(case
+                      when payments.entries > #{@entries}
+                      then 1 else 0 end) as entries,
+                  sum(case
+                      when payments.pay_duration < #{@hours}
+                      then 1 else 0 end) as loafers,
+                  sum(case
                         when extract(hour from arrive) > 5 and extract(hour from arrive) < 16 then
                           case
-                            when extract(hour from arrive) < 7 then 0
-                            when extract(hour from arrive) = 7 and extract(minute from arrive) < 15 then 0
+                            when extract(hour from arrive) < #{@morning_hour} then 0
+                            when extract(hour from arrive) = #{@morning_hour} and extract(minute from arrive) < #{@morning_minute} then 0
                             else 1
                           end
 
-                        when extract(hour from arrive) >= 16 then
+                        when extract(hour from arrive) >= #{@evening_hour} then
                           case
-                            when extract(hour from arrive) = 16 and extract(minute from arrive) <= 30
+                            when extract(hour from arrive) = #{@evening_hour} and extract(minute from arrive) <= #{@evening_minute}
                             then 0
                             else 1
                           end
@@ -65,22 +88,22 @@ class EmployeesController < ApplicationController
                   case
                       when extract(hour from arrive) > 5 and extract(hour from arrive) < 16 then
                         case
-                          when extract(hour from arrive) < 7 then 0
-                          when extract(hour from arrive) = 7 and extract(minute from arrive) < 15 then 0
+                          when extract(hour from arrive) < #{@morning_hour} then 0
+                          when extract(hour from arrive) = #{@morning_hour} and extract(minute from arrive) < #{@morning_minute} then 0
                           else 1
                         end
 
-                      when extract(hour from arrive) >= 16 then
-                        case
-                          when extract(hour from arrive) = 16 and extract(minute from arrive) <= 30
-                          then 0
-                          else 1
+                      when extract(hour from arrive) >= #{@evening_hour} then
+                          case
+                            when extract(hour from arrive) = #{@evening_hour} and extract(minute from arrive) <= #{@evening_minute}
+                            then 0
+                            else 1
                         end
                   end as late
     SQL
 
     @payments = @payments.select(sql)
-    @payments = @payments.limit(100)                                              unless params[:filter] || params[:surname_start]
+    # @payments = @payments.limit(100)                                               unless params[:filter] || params[:surname_start]
     @payments = @payments.order(:workday, :finger).all
 
     respond_to do |format|

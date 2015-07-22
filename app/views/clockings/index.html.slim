@@ -1,9 +1,10 @@
 
 .page-header
   - unless request.format == :pdf
-    = link_to day_employees_path(s_date: @workday.strftime('%d %B %Y')), :class => 'btn btn-default btn-sm' do
+    /= link_to day_employees_path(s_date: @workday.strftime('%d %B %Y')), :class => 'btn btn-default btn-sm' do
+    = link_to 'javascript:history.back()', :class => 'btn btn-default btn-sm' do
       span.glyphicon.glyphicon-chevron-left> Back
-    = link_to url_for(params.merge(:format => :pdf)), :class => 'btn btn-default btn-sm' do
+    = link_to url_for(params.merge(:format => :pdf)), :class => 'btn btn-info btn-sm' do
       span.glyphicon.glyphicon-print
   h3
     = @employee.fullname.titleize

@@ -15,12 +15,12 @@
     .form-inline
       = render partial: 'shared/start_end_date'
       .col-md-2.text-right
-        => label_tag 'Show NOT on Payroll'
+        => label_tag 'NOT on Payroll'
         =< check_box_tag :show_all, true, params[:show_all].present? ? true : false, {class: 'form_control'}
       .col-md-2.text-right
-        => link_to url_for(params.merge(:format => :csv)), :class => 'btn btn-default btn-sm', title: 'Download csv' do
+        => link_to url_for(params.merge(:format => :csv)), :class => 'btn btn-info btn-sm', title: 'Download csv' do
           span.glyphicon.glyphicon-download-alt
-        button.btn.btn-default.btn-sm [type='submit']
+        button.btn.btn-success.btn-sm [type='submit']
           span.glyphicon.glyphicon-refresh
 
 
