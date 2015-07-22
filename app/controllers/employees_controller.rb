@@ -15,7 +15,8 @@ class EmployeesController < ApplicationController
 
   def filter
     params[:payroll] = true unless params.has_key?(:q)
-    @employees = Employee.order(:surname)
+    @employees = Employee
+    @employees = @employees.order(params[:order].present? ? params[:order].downcase : 'surname')
     @employees = @employees.active                                  unless params[:show_all]
     @employees = @employees.use_in_payroll                          if params[:payroll].present?
     @employees = @employees.filtered(params[:q])                    if params[:q].present?
@@ -79,7 +80,7 @@ class EmployeesController < ApplicationController
                             else 1
                           end
                       end) as late
-          SQL
+    SQL
 
     @totals   = @payments.select(sql)
 
@@ -212,35 +213,42 @@ class EmployeesController < ApplicationController
 
   private
 
-    def payroll_query(s_date, e_date)
-      sql = <<-SQL
+  def payroll_query(s_date, e_date)
+    sql = <<-SQL
                     employees.sort, employees.finger, employees.name, employees.surname, employees.term,
                     sum(case
-                        when dayofweek(workday) = 1  and holidate is null
+                        when workday is null then 0
+                        when workday is not null and dayofweek(workday) = 1  and holidate is null
                         then ifnull(pay_duration, 0)                      else 0
                         end) as sun,
                     sum(case
-                        when dayofweek(workday) = 2 and holidate is null
+                        when workday is null then 0
+                        when workday is not null and dayofweek(workday) = 2 and holidate is null
                         then ifnull(pay_duration, 0)                      else 0
                         end) as mon,
                     sum(case
-                        when dayofweek(workday) = 3  and holidate is null
+                        when workday is null then 0
+                        when workday is not null and dayofweek(workday) = 3  and holidate is null
                         then ifnull(pay_duration, 0)                      else 0
                         end) as tue    ,
                     sum(case
-                        when dayofweek(workday) = 4  and holidate is null
+                        when workday is null then 0
+                        when workday is not null and dayofweek(workday) = 4  and holidate is null
                         then ifnull(pay_duration, 0)                      else 0
                         end) as wed   ,
                     sum(case
-                        when dayofweek(workday) = 5  and holidate is null
+                        when workday is null then 0
+                        when workday is not null and dayofweek(workday) = 5  and holidate is null
                         then ifnull(pay_duration, 0)                      else 0
                         end) as thu,
                     sum(case
-                        when dayofweek(workday) = 6  and holidate is null
+                        when workday is null then 0
+                        when workday is not null and dayofweek(workday) = 6  and holidate is null
                         then ifnull(pay_duration, 0)                      else 0
                         end) as fri,
                     sum(case
-                        when dayofweek(workday) = 7  and holidate is null
+                        when workday is null then 0
+                        when workday is not null and dayofweek(workday) = 7  and holidate is null
                         then ifnull(pay_duration, 0)                      else 0
                         end) as sat,
                     sum(case
@@ -248,24 +256,24 @@ class EmployeesController < ApplicationController
                         then ifnull(pay_duration, 0)                      else 0
                         end) as pub,
                     sum(1) as records
-      SQL
+    SQL
 
-      join_payroll = "left join payments on payments.finger = employees.finger and payments.workday between '#{@s_date}' AND '#{@s_date}'"
-      @payroll = Employee.joins(join_payroll) if params[:show_all].present?
-      @payroll = Employee.use_in_payroll.joins(join_payroll) unless params[:show_all].present?
-      @payroll = @payroll.joins('left join holidays on workday = holidate')
-      @payroll = @payroll.select(sql)
-      @payroll = @payroll.group('employees.sort, employees.finger, employees.name, employees.surname, employees.term')
-      @payroll = @payroll.order('employees.sort')
-    end
+    join_payroll = "left join payments on payments.finger = employees.finger and payments.workday between '#{@s_date}' AND '#{@e_date}'"
+    @payroll = Employee.joins(join_payroll) if params[:show_all].present?
+    @payroll = Employee.use_in_payroll.joins(join_payroll) unless params[:show_all].present?
+    @payroll = @payroll.joins('left join holidays on workday = holidate')
+    @payroll = @payroll.select(sql)
+    @payroll = @payroll.group('employees.sort, employees.finger, employees.name, employees.surname, employees.term')
+    @payroll = @payroll.order('employees.sort')
+  end
 
-    # Use callbacks to share common setup or constraints between actions.
-    def set_employee
-      @employee = Employee.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_employee
+    @employee = Employee.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def employee_params
-      params.require(:employee).permit(:name, :surname, :sort, :finger, :filter, :term, :include_in_payroll, :employed_from, :employed_to)
-    end
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def employee_params
+    params.require(:employee).permit(:name, :surname, :sort, :finger, :filter, :term, :include_in_payroll, :employed_from, :employed_to)
+  end
 end

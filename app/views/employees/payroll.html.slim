@@ -53,8 +53,6 @@ hr
           td= "P#{p.finger.to_s.rjust(3, '0')}"
           td= p.name.capitalize
           td= p.surname.capitalize
-          /td.text-right.text-warning= p.duration.strftime('%H:%M')
-          /td.text-right.text-success= number_with_precision p.pay_duration, precision: 2
 
           td.text-right= number_with_precision  p.wed, precision: 2
           td.text-right= number_with_precision  p.thu, precision: 2
@@ -65,7 +63,7 @@ hr
           td
           td.text-right.bg-warning= number_with_precision p.sat, precision: 2
           td.text-right.bg-warning= number_with_precision p.sun, precision: 2
-          td.text-right.bg-warning= number_with_precision  p.pub, precision: 2
+          td.text-right.bg-warning= number_with_precision p.pub, precision: 2
 
 
 javascript:
