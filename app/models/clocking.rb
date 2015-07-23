@@ -23,10 +23,12 @@ class Clocking < ActiveRecord::Base
     end
 
     Clocking.where('clocking >= ?', earliest_clocking).order(:finger).select(:finger, :name, :surname).uniq.each do |c|
-      unless Employee.exists?(finger: c.finger)
-        Employee.create!(finger:    c.finger,
-                         name:      c.name,
-                         surname:   c.surname)
+      unless Employee.exists?(finger:              c.finger)
+             Employee.create!(finger:              c.finger,
+                              name:                c.name,
+                              surname:             c.surname,
+                              term:                'T',
+                              include_in_payroll:  false)
       end
     end
 
