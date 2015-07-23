@@ -16,13 +16,23 @@ class EmployeesController < ApplicationController
   def filter
     params[:payroll] = true unless params.has_key?(:q)
     @employees = Employee
-    @employees = @employees.order(params[:order].present? ? params[:order].downcase : 'surname')
+    @employees = @employees.order("#{params[:order].present? ? params[:order].downcase : 'surname'}, surname")
     @employees = @employees.active                                  unless params[:show_all]
     @employees = @employees.use_in_payroll                          if params[:payroll].present?
     @employees = @employees.filtered(params[:q])                    if params[:q].present?
     @employees = @employees.surname_start(params['surname_start'])  if params[:surname_start]
     # @employees = @employees.limit(50)                               unless params[:filter] || params[:surname_start]
     @employees = @employees.all
+
+    respond_to do |format|
+      format.html
+      format.pdf {
+        html = render_to_string(action: 'filter.html.slim', layout: 'pdf.html.slim')
+        kit = PDFKit.new(html)
+        kit.stylesheets << "#{Rails.root.join('app/assets/stylesheets','pdf.css')}"
+        send_data kit.to_pdf, :filename => 'employees.pdf', :type => :pdf
+      }
+    end
   end
 
   def day
@@ -156,7 +166,7 @@ class EmployeesController < ApplicationController
   def update
     respond_to do |format|
       if @employee.update(employee_params)
-        format.html { redirect_to filter_employees_path, notice: 'Employee was successfully updated.' }
+        format.html { redirect_to filter_employees_path(order: params[:order]), notice: 'Employee was successfully updated.' }
         format.json { render :show, status: :ok, location: @employee }
       else
         format.html { render :edit }

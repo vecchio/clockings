@@ -48,6 +48,8 @@
         span.input-group-addon
           i.glyphicon.glyphicon-th
 
+        = hidden_field_tag :order, params[:order]
+
   .form-group.col-sm-12= f.submit class: 'btn btn-primary'
 
 
