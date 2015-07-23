@@ -1,7 +1,6 @@
 .page-header
-  = link_to clockings_path, :class => 'btn btn-default' do 
-    span.glyphicon.glyphicon-list-alt
-    |  Back 
+  = link_to 'javascript:history.back()', :class => 'btn btn-default btn-sm' do
+    span.glyphicon.glyphicon-chevron-left> Back
   = link_to edit_clocking_path(@clocking), :class => 'btn btn-primary' do 
     span.glyphicon.glyphicon-pencil
     |  Edit 

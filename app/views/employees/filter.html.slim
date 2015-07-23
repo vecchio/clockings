@@ -1,6 +1,7 @@
 .page-header
-  = link_to new_employee_path, :class => 'btn btn-default btn-sm' do
-    span.glyphicon.glyphicon-plus New
+  - unless request.format == :pdf
+    = link_to new_employee_path, :class => 'btn btn-default btn-sm' do
+      span.glyphicon.glyphicon-plus New
   h2 Employees
   h5.text-success
     => params[:show_all].present? ? 'Current and Terminated Employees' : 'Current Employees'
@@ -13,39 +14,42 @@
     => ' ~ ordered by '
     = params[:order].present? ? params[:order] : 'Surname'
 
-.row.roses-row
-  = form_tag filter_employees_path, :method => :post do
-    .form-inline
-      .form-group.col-md-4
-        /=<> label_tag 'Names or Surnames containing:'
-        b<> Names or Surnames containing:
-        = text_field_tag :q, params[:q], class: 'form_control', style: 'width:140px;'
-      .form-group.col-md-2
-        b<> Service Terminated:
-        =<> check_box_tag :show_all, true,  params[:show_all].present? ? true : false, {class: 'form_control'}
-      .form-group.col-md-2
-        b<> Payroll Only:
-        =<> check_box_tag  :payroll, true, params[:payroll], {class: 'form_control'}
-      .form-group.col-md-2
-        => label_tag 'Order by'
-        =< select_tag :order, options_for_select(%w(Sort Finger Name Surname), params[:order].present? ? params[:order] : 'Surname')
-      .form-group.col-md-2
-        span.pull-right
-          button.btn.btn-success.btn-sm [type='submit']
-            span.glyphicon.glyphicon-refresh
+- unless request.format == :pdf
+  .row.roses-row
+    = form_tag filter_employees_path, :method => :post do
+      .form-inline
+        .form-group.col-md-4
+          /=<> label_tag 'Names or Surnames containing:'
+          b<> Names or Surnames containing:
+          = text_field_tag :q, params[:q], class: 'form_control', style: 'width:140px;'
+        .form-group.col-md-2
+          b<> Service Terminated:
+          =<> check_box_tag :show_all, true,  params[:show_all].present? ? true : false, {class: 'form_control'}
+        .form-group.col-md-2
+          b<> Payroll Only:
+          =<> check_box_tag  :payroll, true, params[:payroll], {class: 'form_control'}
+        .form-group.col-md-2
+          => label_tag 'Order by'
+          =< select_tag :order, options_for_select(%w(Sort Finger Name Surname), params[:order].present? ? params[:order] : 'Surname')
+        .form-group.col-md-2
+          span.pull-right
+            => link_to url_for(params.merge(:format => :pdf)), :class => 'btn btn-info btn-sm' do
+              span.glyphicon.glyphicon-print
+            button.btn.btn-success.btn-sm [type='submit']
+              span.glyphicon.glyphicon-refresh
 
-.row
-  .col-md-12
-    - letters = Employee.all.collect { |s| s.surname[0] }.uniq
-    - ('A'..'Z').each do |l|
-      span.link-letter
-        - if letters.include?(l)
-          = link_to l, url_for(params.merge(surname_start: l)), class: 'btn btn-default btn-xs'
-        - else
-          = l
-    span< surnames starting with  . . . ( including filter above )
+  .row
+    .col-md-12
+      - letters = Employee.all.collect { |s| s.surname[0] }.uniq
+      - ('A'..'Z').each do |l|
+        span.link-letter
+          - if letters.include?(l)
+            = link_to l, url_for(params.merge(surname_start: l)), class: 'btn btn-default btn-xs'
+          - else
+            = l
+      span< surnames starting with  . . . ( including filter above )
 
-hr
+  hr
 
 .table-responsive
   table.table-condensed.table.table-hover
@@ -58,7 +62,9 @@ hr
         th Term
         th Pay
         th Employed
-        th.col-md-2 Until
+        - unless request.format == :pdf
+          th.col-md-2 Until
+          th
     tbody
       - @employees.each do | employee |
         - rowclass = employee.term == 'P' ? 'text-primary' : ''
@@ -71,18 +77,21 @@ hr
           td= employee.term == 'P' ? 'Perm' : 'Temp'
           td= employee.include_in_payroll? ? 'P' : ''
           td= employee.employed_from.strftime('%d %b %Y')
-          td: span.small
-            - if employee.employed_to <= Date.today
-              =<> employee.employed_to.strftime('%d %b %Y')
-            - if employee.employed_to <= Date.today
-              =<> distance_of_time_in_words employee.employed_from, employee.employed_to
-            - else
-              =<> distance_of_time_in_words_to_now employee.employed_from
-          td
-            span.pull-right
-              => link_to employee, class: 'btn btn-default btn-xs' do
-                i.glyphicon.glyphicon-eye-open
-              => link_to edit_employee_path(employee), class: 'btn btn-default btn-xs' do
-                i.glyphicon.glyphicon-pencil
-              = link_to employee, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-default btn-xs' do
-                i.glyphicon.glyphicon-trash
+
+          - unless request.format == :pdf
+            td: span.small
+              - if employee.employed_to <= Date.today
+                =<> employee.employed_to.strftime('%d %b %Y')
+              - if employee.employed_to <= Date.today
+                =<> distance_of_time_in_words employee.employed_from, employee.employed_to
+              - else
+                =<> distance_of_time_in_words_to_now employee.employed_from
+
+            td
+              span.pull-right
+                => link_to employee, class: 'btn btn-default btn-xs' do
+                  i.glyphicon.glyphicon-eye-open
+                => link_to edit_employee_path(employee, order: params[:order]), class: 'btn btn-default btn-xs' do
+                  i.glyphicon.glyphicon-pencil
+                = link_to employee, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-default btn-xs' do
+                  i.glyphicon.glyphicon-trash
