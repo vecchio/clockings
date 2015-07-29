@@ -268,7 +268,7 @@ class EmployeesController < ApplicationController
                     sum(1) as records
     SQL
 
-    join_payroll = "left join payments on payments.finger = employees.finger and payments.workday between '#{@s_date}' AND '#{@e_date}'"
+    join_payroll = "left join payments on payments.finger = employees.finger and payments.workday between '#{s_date}' AND '#{e_date}'"
     @payroll = Employee.joins(join_payroll) if params[:show_all].present?
     @payroll = Employee.use_in_payroll.joins(join_payroll) unless params[:show_all].present?
     @payroll = @payroll.joins('left join holidays on workday = holidate')
